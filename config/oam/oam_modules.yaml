@@ -1,0 +1,817 @@
+- project:
+    name: oam_wcdma16
+    module:
+      - baysex:
+         svnrepo: 'pac-baysex-e1/qx/branches/wcdma16'
+         project: 'pac-baysex-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [crnc]
+         action: !!python/tuple [c]
+         sad_module: baysex
+         m_PAC: 'baysexqx.pac'
+         m_TNCHECK_DIR: '../repos/bay'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: 'src/BAYSEXQX.COM'
+         promote_trigger: 'baysex/OAMCI_trigger_wcdma16/crnc/promote'
+         cci_trigger: 'baysex/OAMCI_trigger_wcdma16/crnc/promote'
+         smt_trigger: 'baysex/OAMCI_trigger_wcdma16/crnc/mt'     
+         promote_branch: 'pac-baysex-e1/qx/branches/wcdma16.promoted'   
+
+      - baysex_mc:
+         svnrepo: 'pac-baysex-e1/qn/branches/wcdma16'
+         project: 'pac-baysex-e1/qn'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c]
+         sad_module: baysex
+         m_PAC: 'baysexqx.pac'
+         m_TNCHECK_DIR: '../repos/bay'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: 'src/BAYSEXQX.COM'
+         promote_trigger: 'baysex/OAMCI_trigger_wcdma16/mcrnc/promote'
+         cci_trigger: 'baysex/OAMCI_trigger_wcdma16/mcrnc/promote'
+         smt_trigger: 'baysex/OAMCI_trigger_wcdma16/mcrnc/mt'     
+         promote_branch: 'pac-baysex-e1/qn/branches/wcdma16.promoted'
+
+      - boimed:
+         svnrepo: 'pac-boi_qx-e1/qx/branches/wcdma16'
+         project: 'pac-boi_qx-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c, s, m]
+         sad_module: boimed
+         m_PAC: 'BOI_QXQX.PAC'
+         m_TNCHECK_DIR: '../repos/boi_qxqx'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: 'src/boi_qxqx.com'
+         promote_trigger: 'boimed/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'boimed/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'boimed/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-boi_qx-e1/qx/branches/wcdma16.promoted'  
+
+      - border:
+         svnrepo: 'pac-bor_qx-e1/qx/branches/crnc16'
+         project: 'pac-bor_qx-e1/qx'
+         gerrit_branch: 'crnc16'
+         product: !!python/tuple [crnc]
+         action: !!python/tuple [c, t, s, m]
+         sad_module: border
+         m_PAC: 'BOR_QXQX.PAC'
+         m_TNCHECK_DIR: '../repos/bor_qxqx'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: 'src_crnc/bor_qxqx.com'
+         promote_trigger: 'border/OAMCI_trigger_wcdma16/crnc/promote'
+         cci_trigger: 'border/OAMCI_trigger_wcdma16/crnc/promote'
+         smt_trigger: 'border/OAMCI_trigger_wcdma16/crnc/mt'     
+         promote_branch: 'pac-bor_qx-e1/qx/branches/crnc16.promoted'    
+
+      - border_mc:
+         svnrepo: 'pac-bor_qx-e1/qx/branches/mcrnc16'
+         project: 'pac-bor_qx-e1/qx'
+         gerrit_branch: 'mcrnc16'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c, t, s]
+         sad_module: border
+         m_PAC: 'BOR_QXQX.PAC'
+         m_TNCHECK_DIR: '../repos/bor_qxqx'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: 'src_crnc/bor_qxqx.com'
+         promote_trigger: 'border/OAMCI_trigger_wcdma16/mcrnc/promote'
+         cci_trigger: 'border/OAMCI_trigger_wcdma16/mcrnc/promote'
+         smt_trigger: 'border/OAMCI_trigger_wcdma16/mcrnc/mt'     
+         promote_branch: 'pac-bor_qx-e1/qx/branches/mcrnc16.promoted'    
+
+      - clwman:
+         svnrepo: 'pac-clw_q2-e1/qx/branches/wcdma16'
+         project: 'pac-clw_q2-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c, t, s, m]
+         sad_module: clwman
+         m_PAC: 'CLW_Q2QX.PAC'
+         m_TNCHECK_DIR: '../repos/clwman'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: 'src/clw_q2qx.com'
+         promote_trigger: 'clwman/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'clwman/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'clwman/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-clw_q2-e1/qx/branches/wcdma16.promoted'   
+
+      - di5prb:
+         svnrepo: 'com-di5sta-e1/qx/branches/wcdma16'
+         project: 'com-di5sta-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c]
+         sad_module: di5prb
+         m_PAC: 'None'
+         m_TNCHECK_DIR: 'None'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: 'None'
+         promote_trigger: 'di5prb/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'di5prb/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'di5prb/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'com-di5sta-e1/qx/branches/wcdma16.promoted'   
+
+      - evasor:
+         svnrepo: 'SS_QNEvasor/branches/wcdma16'
+         project: 'SS_QNEvasor'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c, s]
+         sad_module: evasor
+         m_PAC: 'NULL.PAC'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'evasor/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'evasor/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'evasor/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'SS_QNEvasor/branches/wcdma16.promoted'   
+
+      - foolib:
+         svnrepo: 'pac-foolib-e1/qx/branches/wcdma16'
+         project: 'pac-foolib-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c, s, t]
+         sad_module: foolib
+         m_PAC: 'foolibqx.pac'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'foolib/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'foolib/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'foolib/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-foolib-e1/qx/branches/wcdma16.promoted'  
+
+      - gizmos:
+         svnrepo: 'pac-giz_qd-e1/qx/branches/wcdma16'
+         project: 'pac-giz_qd-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c]
+         sad_module: gizmos
+         m_PAC: 'GIZ_QDQX.PAC'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'gizmos/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'gizmos/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'gizmos/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-giz_qd-e1/qx/branches/wcdma16.promoted'  
+
+      - gougou:
+         svnrepo: 'pac-gou_qx-e1/qx/branches/wcdma16'
+         project: 'pac-gou_qx-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [crnc, mcrnc]
+         action: !!python/tuple [c, s, t, m]
+         sad_module: gougou
+         m_PAC: 'GOU_QXQX.PAC'
+         m_TNCHECK_DIR: '../repos/gougou'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'gougou/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'gougou/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'gougou/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-gou_qx-e1/qx/branches/wcdma16.promoted'   
+
+      - hpqfile:
+         svnrepo: 'pac-hpqfile-e1/qx/branches/wcdma16'
+         project: 'pac-hpqfile-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [crnc]
+         action: !!python/tuple [c]
+         sad_module: hpqfile
+         m_PAC: 'HPQ_Q2QX.PAC'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'hpqfile/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'hpqfile/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'hpqfile/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-hpqfile-e1/qx/branches/wcdma16.promoted'  
+
+      - hwxprb:
+         svnrepo: 'pac-hwxprb-e1/qx/branches/wcdma16'
+         project: 'pac-hwxprb-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c]
+         sad_module: hwxprb
+         m_PAC: 'None'
+         m_TNCHECK_DIR: 'None'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'hwxprb/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'hwxprb/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'hwxprb/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-hwxprb-e1/qx/branches/wcdma16.promoted'   
+
+      - jkrprb:
+         svnrepo: 'pac-jkr_qx-e1/qx/branches/wcdma16'
+         project: 'pac-jkr_qx-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c]
+         sad_module: jkrprb
+         m_PAC: 'None'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'jkrprb/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'jkrprb/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'jkrprb/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-jkr_qx-e1/qx/branches/wcdma16.promoted'
+
+      - jmlprb:
+         svnrepo: 'pac-jmlprb-e1/qx/branches/crnc16'
+         project: 'pac-jmlprb-e1/qx'
+         gerrit_branch: 'crnc16'
+         product: !!python/tuple [crnc]
+         action: !!python/tuple [c, s]
+         sad_module: jmlprb
+         m_PAC: 'None'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'jmlprb/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'jmlprb/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'jmlprb/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-jmlprb-e1/qx/branches/crnc16.promoted'
+
+      - jondoe:
+         svnrepo: 'pac-jondoe-e1/qx/branches/wcdma16'
+         project: 'pac-jondoe-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c, s]
+         sad_module: jondoe
+         m_PAC: 'jondoeqx.pac'
+         m_TNCHECK_DIR: '../repos/jondoeqx'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'jondoe/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'jondoe/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'jondoe/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-jondoe-e1/qx/branches/wcdma16.promoted'   
+
+      - ma5prb:
+         svnrepo: 'pac-ma5_q2-e1/qx/branches/wcdma16'
+         project: 'pac-ma5_q2-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c, s]
+         sad_module: ma5prb
+         m_PAC: 'MA5_Q2QX.PAC'
+         m_TNCHECK_DIR: 'None'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'ma5prb/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'ma5prb/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'ma5prb/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-ma5_q2-e1/qx/branches/wcdma16.promoted'  
+
+      - obhero:
+         svnrepo: 'pac-obh_qx-e1/qx/branches/wcdma16'
+         project: 'pac-obh_qx-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c, s, t, m]
+         sad_module: obhero
+         m_PAC: 'OBH_QXQX.PAC'
+         m_TNCHECK_DIR: '../repos/obh_qxqx'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'obhero/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'obhero/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'obhero/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-obh_qx-e1/qx/branches/wcdma16.promoted'   
+
+      - obllib:
+         svnrepo: 'pac-obllib-e1/qx/branches/wcdma16'
+         project: 'pac-obllib-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c, s]
+         sad_module: obllib
+         m_PAC: 'OBLLIBQX.PAC'
+         m_TNCHECK_DIR: '../repos/oblibs'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'obllib/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'obllib/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'obllib/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-obllib-e1/qx/branches/wcdma16.promoted'  
+
+      - pablib:
+         svnrepo: 'com-pablib-e1/qx/branches/wcdma16'
+         project: 'com-pablib-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c, s, t]
+         sad_module: pablib
+         m_PAC: 'PAB_Q2QX.PAC'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'pablib/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'pablib/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'pablib/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'com-pablib-e1/qx/branches/wcdma16.promoted'  
+
+      - pabros:
+         svnrepo: 'pac-pab_q2-e1/qx/branches/wcdma16'
+         project: 'pac-pab_q2-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c, s, t]
+         sad_module: pabros
+         m_PAC: 'PAB_Q2QX.PAC'
+         m_TNCHECK_DIR: '../repos/pab_q2qx'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: 'src/pab_q2qx.com'
+         promote_trigger: 'pabros/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'pabros/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'pabros/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-pab_q2-e1/qx/branches/wcdma16.promoted'  
+
+      - pi5prb:
+         svnrepo: 'pac-pi5prb-e1/qx/branches/wcdma16'
+         project: 'pac-pi5prb-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c]
+         sad_module: pi5prb
+         m_PAC: 'None'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'pi5prb/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'pi5prb/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'pi5prb/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-pi5prb-e1/qx/branches/wcdma16.promoted'   
+
+      - pmiprb:
+         svnrepo: 'pac-pmi_q2-e1/qx/branches/wcdma16'
+         project: 'pac-pmi_q2-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c]
+         sad_module: pmiprb
+         m_PAC: 'None'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'pmiprb/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'pmiprb/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'pmiprb/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-pmi_q2-e1/qx/branches/wcdma16.promoted'   
+
+      - raiq2:
+         svnrepo: 'pac-rnwdb-e1/qx/branches/wcdma16'
+         project: 'pac-rnwdb-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [crnc]
+         action: !!python/tuple [c, t, s]
+         sad_module: rnwdb
+         m_PAC: 'RAI_Q2QX.PAC'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'rnwdb/OAMCI_trigger_wcdma16/crnc/promote'
+         cci_trigger: ''
+         smt_trigger: ''     
+         promote_branch: 'pac-rnwdb-e1/qx/branches/wcdma16.promoted' 
+         
+      - raiqx:
+         svnrepo: 'pac-rnwdb-e1/qx/branches/wcdma16'
+         project: 'pac-rnwdb-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [crnc]
+         action: !!python/tuple [c, t, s]
+         sad_module: rnwdb
+         m_PAC: 'RAI_QXQX.PAC'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'rnwdb/OAMCI_trigger_wcdma16/crnc/promote'
+         cci_trigger: ''
+         smt_trigger: ''     
+         promote_branch: 'pac-rnwdb-e1/qx/branches/wcdma16.promoted'   
+
+      - raktor:
+         svnrepo: 'pac-rak_q2-e1/qx/branches/wcdma16'
+         project: 'pac-rak_q2-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [m, t, s, c]
+         sad_module: raktor
+         m_PAC: 'RAK_Q2QX.PAC'
+         m_TNCHECK_DIR: '../repos/raktor'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'raktor/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'raktor/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'raktor/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-rak_q2-e1/qx/branches/wcdma16.promoted'   
+
+      - ravqx:
+         svnrepo: 'pac-rnwdb-e1/qx/branches/wcdma16'
+         project: 'pac-rnwdb-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [crnc]
+         action: !!python/tuple [c, t, s]
+         sad_module: rnwdb
+         m_PAC: 'RAV_QXQX.PAC'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'rnwdb/OAMCI_trigger_wcdma16/crnc/promote'
+         cci_trigger: 'rnwdb/OAMCI_trigger_wcdma16/crnc/promote'
+         smt_trigger: 'rnwdb/OAMCI_trigger_wcdma16/crnc/mt'     
+         promote_branch: 'pac-rnwdb-e1/qx/branches/wcdma16.promoted' 
+
+      - rayman:
+         svnrepo: 'pac-ray_q2-e1/qx/branches/wcdma16'
+         project: 'pac-ray_q2-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [t, s, c]
+         sad_module: rayman
+         m_PAC: 'RAY_Q2QX.PAC'
+         m_TNCHECK_DIR: '../repos/ray_q2qx'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: 'src/ray_q2qx.com'
+         promote_trigger: 'rayman/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'rayman/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'rayman/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-ray_q2-e1/qx/branches/wcdma16.promoted'  
+
+      - rekove:
+         svnrepo: 'pac-rek_qx-e1/qx/branches/wcdma16'
+         project: 'pac-rek_qx-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c]
+         sad_module: rekove
+         m_PAC: 'None'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'rekove/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'rekove/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'rekove/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-rek_qx-e1/qx/branches/wcdma16.promoted'   
+
+      - reuman:
+         svnrepo: 'pac-reu_q2-e1/qx/branches/wcdma16'
+         project: 'pac-reu_q2-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c, t, s, m]
+         sad_module: reuman
+         m_PAC: 'REU_Q2QX.PAC'
+         m_TNCHECK_DIR: '../repos/reuman'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: 'src/reu_q2qx.com'
+         promote_trigger: 'reuman/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'reuman/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'reuman/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-reu_q2-e1/qx/branches/wcdma16.promoted'   
+
+      - rezini:
+         svnrepo: 'pac-rez_qx-e1/qx/branches/wcdma16'
+         project: 'pac-rez_qx-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc, crnc]
+         action: !!python/tuple [c]
+         sad_module: rezini
+         m_PAC: 'None'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'rezini/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'rezini/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'rezini/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-rez_qx-e1/qx/branches/wcdma16.promoted' 
+
+      - rnhand:
+         svnrepo: 'pac-rnhand-e1/qx/branches/wcdma16'
+         project: 'pac-rnhand-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [crnc]
+         action: !!python/tuple [c, s]
+         sad_module: rnhand
+         m_PAC: 'RNHANDQX.PAC'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'rnhand/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'rnhand/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'rnhand/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-rnhand-e1/qx/branches/wcdma16.promoted' 
+      
+      - ruoste:
+         svnrepo: 'pac-ruoste-e1/qx/branches/wcdma16'
+         project: 'pac-ruoste-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [crnc]
+         action: !!python/tuple [c, s]
+         sad_module: ruoste
+         m_PAC: 'RUOSTEQX.PAC'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'ruoste/OAMCI_trigger_wcdma16/crnc/promote'
+         cci_trigger: 'ruoste/OAMCI_trigger_wcdma16/crnc/promote'
+         smt_trigger: 'ruoste/OAMCI_trigger_wcdma16/crnc/mt'
+         promote_branch: 'pac-ruoste-e1/qx/branches/wcdma16.promoted'
+       
+      - ruoste_mc:
+         svnrepo: 'pac-ruoste-e1/mx/branches/wcdma16'
+         project: 'pac-ruoste-e1/mx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c]
+         sad_module: ruoste
+         m_PAC: 'RUOSTEQX.PAC'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'ruoste/OAMCI_trigger_wcdma16/mcrnc/promote'
+         cci_trigger: 'ruoste/OAMCI_trigger_wcdma16/mcrnc/promote'
+         smt_trigger: 'ruoste/OAMCI_trigger_wcdma16/mcrnc/mt'
+         promote_branch: 'pac-ruoste-e1/mx/branches/wcdma16.promoted'
+
+      - rnwdbcli_mc:
+         svnrepo: 'SS_QNrnwdbcli/branches/wcdma16'
+         project: 'SS_QNrnwdbcli'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c, s]
+         sad_module: rnwdbcli
+         m_PAC: 'RAV_QXQX.PAC'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'rnwdbcli/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'rnwdbcli/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'rnwdbcli/OAMCI_trigger_wcdma16/mt'
+         promote_branch: 'SS_QNrnwdbcli/branches/wcdma16.promoted'
+
+      - rnwdbmc:
+         svnrepo: 'pac-rnwdb-e1/mc/branches/wcdma16'
+         project: 'pac-rnwdb-e1/mc'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c, s]
+         sad_module: rnwdb
+         m_PAC: 'RAV_QXQX.PAC'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'rnwdb/OAMCI_trigger_wcdma16/mcrnc/promote'
+         cci_trigger: 'rnwdb/OAMCI_trigger_wcdma16/mcrnc/promote'
+         smt_trigger: 'rnwdb/OAMCI_trigger_wcdma16/mcrnc/mt'     
+         promote_branch: 'pac-rnwdb-e1/mc/branches/wcdma16.promoted'
+
+      - rnwman:
+         svnrepo: 'SS_QNrnwman/branches/wcdma16'
+         project: 'SS_QNrnwman'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c, t, s]
+         sad_module: rnwman
+         m_PAC: 'RAV_QXQX.PAC'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'rnwman/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'rnwman/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'rnwman/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'SS_QNrnwman/branches/wcdma16.promoted' 
+
+      - SS_QNHTTPD:
+         svnrepo: 'SS_QNHTTPD/trunk/SS_QNHTTPD'
+         project: 'SS_QNHTTPD'
+         gerrit_branch: 'master'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c]
+         sad_module: SS_QNHTTPD
+         m_PAC: 'None'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'SS_QNHTTPD/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'SS_QNHTTPD/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'SS_QNHTTPD/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'SS_QNHTTPD/branches/wcdma16.promoted'   
+
+      - SS_QNMEFILE:
+         svnrepo: 'SS_QNMEFILE/trunk/SS_QNMEFILE'
+         project: 'SS_QNMEFILE'
+         gerrit_branch: 'master'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c]
+         sad_module: SS_QNMEFILE
+         m_PAC: 'None'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'SS_QNMEFILE/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'SS_QNMEFILE/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'SS_QNMEFILE/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'SS_QNMEFILE/branches/wcdma16.promoted'   
+
+      - SS_QNQBONKI:
+         svnrepo: 'SS_QNQBONKI/trunk/SS_QNQBONKI'
+         project: 'SS_QNQBONKI'
+         gerrit_branch: 'master'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c]
+         sad_module: SS_QNQBONKI
+         m_PAC: 'None'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'SS_QNQBONKI/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'SS_QNQBONKI/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'SS_QNQBONKI/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'SS_QNQBONKI/branches/wcdma16.promoted'   
+
+      - SS_QNQRPIZA:
+         svnrepo: 'SS_QNQRPIZA/trunk/SS_QNQRPIZA'
+         project: 'SS_QNQRPIZA'
+         gerrit_branch: 'master'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c]
+         sad_module: SS_QNQRPIZA
+         m_PAC: 'None'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''
+         promote_trigger: 'SS_QNQRPIZA/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'SS_QNQRPIZA/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'SS_QNQRPIZA/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'SS_QNQRPIZA/branches/wcdma16.promoted'   
+
+      - SS_QNRNCAlarm:
+         svnrepo: 'SS_QNRNCAlarm/trunk/SS_QNRNCAlarm'
+         project: 'SS_QNRNCAlarm'
+         gerrit_branch: 'master'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c]
+         sad_module: SS_QNRNCAlarm
+         m_PAC: 'None'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: ''       
+         promote_trigger: 'SS_QNRNCAlarm/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'SS_QNRNCAlarm/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'SS_QNRNCAlarm/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'SS_QNRNCAlarm/branches/wcdma16.promoted'   
+
+      - SS_QNRuoste:
+         svnrepo: 'SS_QNRuoste/branches/wcdma16'
+         project: 'SS_QNRuoste'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [mcrnc]
+         action: !!python/tuple [c]
+         sad_module: SS_QNRuoste
+         m_PAC: 'None'
+         m_TNCHECK_DIR: ''
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: '' 
+         promote_trigger: 'SS_QNRuoste/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'SS_QNRuoste/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'SS_QNRuoste/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'SS_QNRuoste/branches/wcdma16.promoted'   
+
+      - tiiprb:
+         svnrepo: 'pac-tiiprb-e1/qx/branches/wcdma16'
+         project: 'pac-tiiprb-e1/qx'
+         gerrit_branch: 'master'
+         product: !!python/tuple [crnc, mcrnc]
+         action: !!python/tuple [c]
+         sad_module: tiiprb
+         m_PAC: 'VEX_Q2QX.PAC'
+         m_TNCHECK_DIR: '../repos/tiiprb'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: 'src/vex_q2qx.com'
+         promote_trigger: 'tiiprb/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'tiiprb/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'tiiprb/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-tiiprb-e1/qx/branches/wcdma16.promoted'    
+
+      - vexeli:
+         svnrepo: 'pac-vex_q2-e1/qx/branches/wcdma16'
+         project: 'pac-vex_q2-e1/qx'
+         gerrit_branch: 'wcdma16'
+         product: !!python/tuple [crnc, mcrnc]
+         action: !!python/tuple [c, s, t]
+         sad_module: vexeli
+         m_PAC: 'VEX_Q2QX.PAC'
+         m_TNCHECK_DIR: '../repos/vexeli'
+         m_product_name: 'None'
+         m_branch: 'None'
+         m_sack: 'None'
+         m_com: 'src/vex_q2qx.com'
+         promote_trigger: 'vexeli/OAMCI_trigger_wcdma16/promote'
+         cci_trigger: 'vexeli/OAMCI_trigger_wcdma16/promote'
+         smt_trigger: 'vexeli/OAMCI_trigger_wcdma16/mt'     
+         promote_branch: 'pac-vex_q2-e1/qx/branches/wcdma16.promoted'   
+
+    jobs:
+      - '{name}_cci_{module}'
+      - '{name}_{module}_promote'
+

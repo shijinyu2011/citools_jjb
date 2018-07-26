@@ -1,0 +1,465 @@
+- defaults:
+    name: global
+    scmurl: 'scm_il'
+    branch: 'rcptrunk'
+    slave: 'docker_image'
+    ftslave: 'CCIFT'
+    ignore_compile: ''
+    ignore_sa: ''
+    ignore_ut: ''
+    ignore_patch: ''
+    ignore_ft: ''
+    scm_polling: commonil_trigger_scm
+    bcn_ft_job_label: ILCCI_FT_B2_Nontraffic
+
+- job-group:
+    name: '{module}_{product}_all'
+    jobs:
+      - '{module}_{product}'
+      - '{module}_{product}_COMPILE'
+      - '{module}_{product}_STATIC_ANALYSIS'
+      - '{module}_{product}_UT'
+
+- job-group:
+    name: 'common_il'
+    jobs:
+       - 'CCI_{module}_TRIGGER'
+       - 'CCI_{module}_FLOW'
+       - 'CCI_{module}_GIT'
+       - 'CCI_{module}_CLOUD'
+       - 'CCI_{module}_IL'
+       - 'CCI_{module}_BCN_FT'
+       - 'CCI_{module}_CLOUD_IMAGE_PATCH_UPLOAD'
+       - 'CCI_{module}_CLOUD_FT'
+       
+- job-group:
+    name: '{module}_{product}_ft'
+    jobs:
+      - '{module}_{product}_FT'
+      - '{module}_{product}_FT_COMPILE'
+      - '{module}_{product}_FT_IMAGE_PATCH_UPLOAD'
+      - '{module}_{product}_FT_FunTest'
+
+- job-template:
+    name: 'CCI_{module}_TRIGGER'
+    node: 'master'
+    project-type: freestyle
+    triggers:
+      - commomil_trigger_trigger:
+          sub: '{module}' 
+    builders:
+      - commonil_trigger_builder:
+          sub: '{module}'
+    publishers:
+      - commonil_trigger_artifacts:
+          sub: '{module}'
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: 'CCI_{module}_CLOUD'
+    project-type: matrix
+    wrappers:
+      - RCP_WRAPPERS
+    execution-strategy:
+      combination-filter: |
+        ((label=="ILCCI"&&(VARENT=="wr-mips-56xx"||VARENT=="wr-mips-6wind-56xx"||VARENT=="wr-mips-bmpp"||VARENT=="wr-mips-6wind-bmpp"||VARENT=="test-x86"||VARENT=="static-analysis"))||(label=="CLOUDCCI"&&(VARENT=="wr-clouldil"||VARENT=="test-cloud"||VARENT=="static-analysis-cloud")))
+    axes:
+      - axis:
+          type: label-expression
+          name: label
+          values:
+            - ILCCI
+            - CLOUDCCI
+      - axis: 
+          type: user-defined
+          name: VARENT
+          values:
+            - wr-clouldil
+            - test-cloud
+            - static-analysis-cloud
+    parameters:
+      - commonil_cci_parameter:
+          subsystem: '{module}'
+    builders:
+      - commonil_cci_builder 
+    publishers:
+      - commonil_cci_artifacts
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: 'CCI_{module}_IL'
+    project-type: matrix
+    wrappers:
+      - RCP_WRAPPERS
+    execution-strategy:
+      combination-filter: |
+        ((label=="ILCCI"&&(VARENT=="wr-mips-bmpp"||VARENT=="wr-mips-6wind-bmpp"||VARENT=="test-x86"||VARENT=="static-analysis"))||(label=="CLOUDCCI"&&(VARENT=="wr-clouldil"||VARENT=="test-cloud"||VARENT=="static-analysis-cloud")))
+    axes:
+      - axis:
+          type: label-expression
+          name: label
+          values:
+            - ILCCI
+            - CLOUDCCI
+      - axis:
+          type: user-defined
+          name: VARENT
+          values:
+            - wr-mips-bmpp
+            - wr-mips-6wind-bmpp
+            - test-x86
+            - static-analysis
+    parameters:
+      - commonil_cci_parameter:
+          subsystem: '{module}'
+    builders:
+      - commonil_cci_builder
+    publishers:
+      - commonil_cci_artifacts
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: 'CCI_{module}_GIT'
+    project-type: matrix
+    execution-strategy:
+      combination-filter: |
+        ((label=="ILCCI"&&(VARENT=="wr-mips-bmpp"||VARENT=="wr-mips-6wind-bmpp"||VARENT=="test-x86"||VARENT=="static-analysis"))||(label=="CLOUDCCI"&&(VARENT=="wr-clouldil"||VARENT=="test-cloud"||VARENT=="static-analysis-cloud")))
+    axes:
+      - axis:
+          type: label-expression
+          name: label
+          values:
+            - ILCCI
+            - CLOUDCCI
+      - axis:
+          type: user-defined
+          name: VARENT
+          values:
+            - wr-mips-bmpp
+            - wr-mips-6wind-bmpp
+            - test-x86
+            - static-analysis
+            - wr-clouldil
+            - test-cloud
+            - static-analysis-cloud
+    parameters:
+      - commonil_cci_parameter:
+          subsystem: '{module}'
+    triggers:
+      - commonil_cci_git_trigger:
+          subsystem: '{module}'
+    builders:
+      - commonil_cci_git_builder
+    publishers:
+      - commonil_cci_artifacts
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: 'CCI_{module}_CLOUD_IMAGE_PATCH_UPLOAD'
+    node: CCI-UPIMG
+    project-type: freestyle
+    wrappers:
+      - RCP_WRAPPERS
+    parameters:
+      - commonil_image_parameter:
+          module: '{module}'
+    builders:
+      - commonil_cci_image_builder:
+          product: '{product}'
+          module: '{module}'
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: 'CCI_{module}_BCN_FT'
+    node: '{bcn_ft_job_label}'
+    project-type: freestyle
+    builders:
+      - commomil_ilft_builder:
+          module: '{module}'
+    publishers:
+      - commonil_ilft_artifacts  
+      - BCN_FT_MAIL
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: 'CCI_{module}_CLOUD_FT'
+    node: CCIFT_CLOUDIL
+    project-type: freestyle
+    parameters:
+      - RCP_FT_PARA:
+          module: '{module}'
+          product: 'vRNC'
+    builders:
+      - FT_builder:
+          module: '{module}'
+    publishers:
+      - FT_ARTIFACT:
+          module: '{module}'
+          product: 'vRNC'
+      - CLOUD_FT_MAIL
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: 'CCI_{module}_FLOW'
+    node: 'master'
+    project-type: flow
+    parameters:
+      - choice:
+          name: type
+          choices:
+            - common
+            - il
+            - cloud
+            - both
+          description: "which product need to test"
+    dsl: |
+         if ( 'both' == params['type']){{
+                 println params["type"]
+                 parallel(
+                    {{
+                      build("CCI_{module}_IL",refs:"VirtualTrunk")
+                      build("CCI_{module}_BCN_FT")
+                      build("CCI_PROMOTE",subsystem:"{module}",branch:'il')
+                      }},
+                    {{
+                      build("CCI_{module}_CLOUD",refs:"cloudVT")
+                      build("CCI_{module}_CLOUD_IMAGE_PATCH_UPLOAD",GERRIT_PATCHSET_REVISION:"cloudVT")
+                      build("CCI_{module}_CLOUD_FT",GERRIT_PATCHSET_REVISION:"cloudVT")
+                      build("CCI_PROMOTE",subsystem:"{module}",branch:'cloud')
+                      }}
+                  )             
+          }}else{{
+               switch ( params["type"])
+               {{
+                  case "common":
+                   println params["type"]
+                   buildClosurescompile=[{{build("CCI_{module}_IL",refs:"VirtualTrunk")}},{{build("CCI_{module}_CLOUD",refs:"VirtualTrunk")}}]
+                   buildClosurestest=[{{build("CCI_{module}_BCN_FT")}},{{
+                     build("CCI_{module}_CLOUD_IMAGE_PATCH_UPLOAD",GERRIT_PATCHSET_REVISION:"VirtualTrunk")
+                     build("CCI_{module}_CLOUD_FT",GERRIT_PATCHSET_REVISION:"VirtualTrunk")}}]
+                   break
+                 case "il":
+                   println params["type"]
+                   buildClosurescompile=[{{build("CCI_{module}_IL",refs:"VirtualTrunk")}}]
+                   buildClosurestest=[{{build("CCI_{module}_BCN_FT")}}]
+                   break
+                 case "cloud":
+                   println params["type"]
+                   buildClosurescompile=[{{build("CCI_{module}_CLOUD",refs:"cloudVT")}}]
+                   buildClosurestest=[{{build("CCI_{module}_CLOUD_IMAGE_PATCH_UPLOAD",GERRIT_PATCHSET_REVISION:"cloudVT")
+                   build("CCI_{module}_CLOUD_FT",GERRIT_PATCHSET_REVISION:"cloudVT")}}]
+                   break
+                  }}
+
+                 parallel(buildClosurescompile)
+                 parallel(buildClosurestest)
+                 build("CCI_PROMOTE",subsystem:"{module}",branch:params["type"])
+          }}
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+      
+- job-template:
+    name: '{module}_{product}'
+    project-type: flow
+    dsl: |
+          parallel (
+             {ignore_compile} {{ build("{module}_{product}_COMPILE",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"],parent_buildnum:build.number) }},
+             {ignore_sa} {{ build("{module}_{product}_STATIC_ANALYSIS",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"]) }},
+             {ignore_ut} {{ build("{module}_{product}_UT",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"]) }}
+          )
+          {ignore_patch} build("{module}_{product}_IMAGE_PATCH_UPLOAD",target_image_name:params["GERRIT_REFSPEC"],parent_buildnum:build.number)
+          {ignore_ft} build("{module}_{product}_FT",DELIVERY_NAME:params["GERRIT_REFSPEC"])
+
+    triggers:
+      - Gerrit_Trigger:
+          pattern: '{scmurl}/{module}'
+          branch: '{branch}'  
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: '{module}_{product}_COMPILE'
+    node: '{slave}'
+    parameters: 
+      - RCP_COMPILE_PARA:
+          subsystem: '{module}'
+          branch: '{branch}'
+    project-type: freestyle
+    wrappers: 
+      - RCP_WRAPPERS
+    builders: 
+      - RCP_COMPILE_builder:
+          product: '{product}'
+          v: 'c'
+    publishers:
+      - COMPILE_ARTIFACT:
+          subsystem: '{module}'
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: '{module}_{product}_STATIC_ANALYSIS'
+    node: '{slave}'
+    parameters:
+      - RCP_COMPILE_PARA:
+          subsystem: '{module}'
+          branch: '{branch}'
+    project-type: freestyle
+    wrappers: 
+      - RCP_WRAPPERS
+    builders: 
+      - RCP_STATISTIC_builder:
+          product: '{product}'
+          v: 's'
+    publishers:
+      - STATIC_ARTIFACT
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: '{module}_{product}_UT'
+    node: '{slave}'
+    parameters:
+      - RCP_COMPILE_PARA:
+          subsystem: '{module}'
+          branch: '{branch}'
+    project-type: freestyle
+    wrappers: 
+      - RCP_WRAPPERS
+    builders: 
+      - RCP_UT_builder:
+          product: '{product}'
+          v: 't'
+    publishers:
+      - UT_ARTIFACT
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: '{module}_{product}_FT'
+    project-type: flow
+    dsl: |
+             compile = build("{module}_{product}_FT_COMPILE",GERRIT_REFSPEC:params["GERRIT_REFSPEC"],GERRIT_BRANCH:params["GERRIT_BRANCH"])
+             build("{module}_{product}_FT_IMAGE_PATCH_UPLOAD", PARENT_URL: compile.build.url,GERRIT_PATCHSET_REVISION:params["GERRIT_PATCHSET_REVISION"])
+             build("{module}_{product}_FT_FunTest",GERRIT_PATCHSET_REVISION:params["GERRIT_PATCHSET_REVISION"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_TOPIC:params["GERRIT_TOPIC"])
+
+    triggers:
+      - Gerrit_Trigger_FT:
+          pattern: '{scmurl}/{module}'
+          branch: '{branch}'
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: '{module}_{product}_FT_COMPILE'
+    node: '{slave}'
+    parameters:
+      - RCP_COMPILE_PARA:
+          subsystem: '{module}'
+          branch: '{branch}'
+    project-type: freestyle
+    wrappers:
+      - RCP_WRAPPERS
+    builders:
+      - RCP_COMPILE_builder:
+          product: '{product}'
+          v: 'c'
+    publishers:
+      - COMPILE_ARTIFACT:
+          module: '{module}'
+          product: '{product}'
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: '{module}_{product}_FT_IMAGE_PATCH_UPLOAD'
+    node: CCI-UPIMG
+    project-type: freestyle
+    wrappers:
+      - RCP_WRAPPERS
+    parameters:
+      - RCP_FT_IMAGE:
+          module: '{module}'
+          product: '{product}'
+    builders:
+      - UPLOAD_IMAGE_builder:
+          product: '{product}'
+          module: '{module}'
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+- job-template:
+    name: '{module}_{product}_FT_FunTest'
+    node: '{ftslave}'
+    project-type: freestyle
+    wrappers:
+      - RCP_WRAPPERS
+    parameters:
+      - RCP_FT_PARA:
+          module: '{module}'
+          product: '{product}'
+    builders:
+      - FT_builder:
+          product: '{product}'
+          module: '{module}'
+    publishers:
+      - FT_ARTIFACT:
+          module: '{module}'
+          product: '{product}'
+    logrotate:
+      daysToKeep: 15
+      numToKeep: 20
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1

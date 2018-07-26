@@ -1,0 +1,9 @@
+ - wrapper:
+     name: RCP_WRAPPERS
+     wrappers: 
+       - timeout:
+           timeout: 150
+           type: absolute
+           fail: true
+       - workspace-cleanup
+       - timestamps

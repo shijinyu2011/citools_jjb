@@ -1,0 +1,210 @@
+- job-template:
+      name: 'oam_ru50ep1_cci_{module}'
+      node: lswarm
+      properties:
+        - promoted-build:
+           names:
+            - copytopromotesvn
+      project-type: matrix
+      scm:
+        - svn-bescme:
+           svnrepo: '{svnrepo}'
+           path: 'branches/ru50ep1'
+      triggers:
+        - gerrit:
+           trigger-on:
+            - patchset-created-event
+            - draft-published-event
+           projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'scm_ern/{svnrepo}'
+              branches:
+               - branch-compare-type: 'PLAIN'
+                 branch-pattern: 'ru50ep1'
+           skip-vote:
+             successful: true
+             failed: true
+             unstable: true
+             notbuilt: true
+           silent: false
+           dynamic-trigger-enabled: false
+           server-name: hzgitv01.china.nsn-net.net
+        - pollscm: 
+            cron: "H/15 * * * *"
+      axes:
+        - axis:
+            type: user-defined
+            name: PRODUCT
+            values: '{obj:product}'
+        - axis:
+            type: user-defined
+            name: V
+            values:
+              - c1
+        - axis:
+            type: slave
+            name: label
+            values:
+              - lswarm
+      execution-strategy:
+        combination-filter: |
+          (label=="lswarm" && ( (PRODUCT=="crnc" && (V=="m" || V=="c" || V=="c1"||V=="t" || V=="s")) || (PRODUCT=="mcrnc" && (V=="c" || V=="c1" ||V=="t"|| V=="s")) ))
+      wrappers:
+        - timeout:
+            timeout: 90
+            type: absolute
+            fail: true
+      builders:
+        - oam-sad-runner:
+            mcbranch: 'MCRNC41_MAINT_BRANCH'
+            sack: 'rn81.sack'
+            PAC: '{module}'
+      publishers:
+        - oam-artifact
+        
+- job-template:
+      name: 'oam_ru40_cci_{module}'
+      node: lswarm
+      properties:
+        - promoted-build:
+           names:
+            - copytopromotesvn
+      project-type: matrix
+      scm:
+        - svn-bescme:
+           svnrepo: '{svnrepo}'
+           path: 'branches/ru40.maintenance'
+      triggers:
+        - gerrit:
+           trigger-on:
+            - patchset-created-event
+            - draft-published-event
+           projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'scm_ern/{svnrepo}'
+              branches:
+               - branch-compare-type: 'PLAIN'
+                 branch-pattern: 'ru40.maintenance'
+           skip-vote:
+             successful: true
+             failed: true
+             unstable: true
+             notbuilt: true
+           silent: false
+           dynamic-trigger-enabled: false
+           server-name: hzgitv01.china.nsn-net.net
+        - pollscm: 
+            cron: "H/15 * * * *"
+      axes:
+        - axis:
+            type: user-defined
+            name: PRODUCT
+            values: '{obj:product}'
+        - axis:
+            type: user-defined
+            name: V
+            values:
+              - c1
+        - axis:
+            type: slave
+            name: label
+            values:
+              - lswarm
+      execution-strategy:
+        combination-filter: |
+          (label=="lswarm" && ( (PRODUCT=="crnc" && (V=="m" || V=="c" || V=="c1"||V=="t" || V=="s")) || (PRODUCT=="mcrnc" && (V=="c" || V=="c1" ||V=="t"|| V=="s")) ))
+      wrappers:
+        - timeout:
+            timeout: 90
+            type: absolute
+            fail: true
+      builders:
+        - oam-sad-runner:
+            mcbranch: 'MCRNC30_MAINT_BRANCH'
+            sack: 'rn70.sack'
+            PAC: '{module}'
+      publishers:
+        - oam-artifact
+        
+- job-template:
+      name: 'oam_ada60_cci_{module}'
+      node: lswarm
+      properties:
+        - promoted-build:
+           names:
+            - copytopromotesvn
+      project-type: freestyle
+      node: lswarm
+      scm:
+        - svn-bescme:
+           svnrepo: '{svnrepo}'
+           path: 'branches/ru50ep1'
+      triggers:
+        - pollscm: 
+            cron: "H/15 * * * *"
+      wrappers:
+        - timeout:
+            timeout: 90
+            type: absolute
+            fail: true
+        - inject:
+            properties-content: PRODUCT=crnc
+            properties-content: V=c1
+        - oam-sad-runner:
+            mcbranch: 'ADA60_MAINT_BRANCH'
+            PAC: '{module}'
+      publishers:
+        - oam-artifact
+        
+
+- scm:
+    name: svn-bescme
+    scm:
+      - svn:
+         workspaceupdater: emulateclean
+         repos:
+           - url: 'http://bescme.inside.nsn.com/isource/svnroot/{svnrepo}/{path}'
+             basedir: workingcopy
+
+- builder:
+    name: oam-sad-runner
+    builders:
+      - shell: |
+          #!/bin/bash
+          rm -fr $WORKSPACE/sad-runner
+          cp -R /apps/sad-runner $WORKSPACE/
+          cd $WORKSPACE/sad-runner
+          git fetch origin refs/changes/60/9160/5 && git checkout FETCH_HEAD
+          cd -
+
+          echo FOO_REV=$SVN_REVISION > $WORKSPACE/foo_build_revision.txt
+          if [ "$GERRIT_REFSPEC" != "" ]; then 
+           rm -rf trunk *_build_revision.txt
+           git clone $GERRIT_SCHEME://hzci@$GERRIT_HOST:$GERRIT_PORT/$GERRIT_PROJECT workingcopy --depth 10
+           cd  workingcopy
+           git fetch $GERRIT_SCHEME://hzci@$GERRIT_HOST:$GERRIT_PORT/$GERRIT_PROJECT $GERRIT_REFSPEC && git checkout FETCH_HEAD
+           cd ..
+          fi
+
+
+          unset SVN_VERSION
+          export PATH=$PATH:/apps/klocwork/bin:/opt/bin
+          source /linux_builds/linuxsacktools/linsee/python_2.7.2/interface/startup/python_2.7.2.env
+          source /linux_builds/linuxsacktools/linsee/python_2.7.2p2/interface/startup/xpython2.7.2p2.env
+          source /linux_builds/linuxsacktools/linsee/python_2.7.2p3/interface/startup/xpython2.7.2p3.env
+          source /opt/svn/linux64/ix86/svn_1.7.8/interface/startup/svn_1.7.8_64.env
+
+          python $WORKSPACE/sad-runner/sad_runner.py -p oamtrunk -m {PAC} -b $WORKSPACE/workingcopy -o $WORKSPACE/statistics --branch {mcbranch} --sack {sack}
+          ret=$?
+
+          if [ $PRODUCT = crnc ] && [ "$mt" = "1" ];then
+            zip -j $WORKSPACE/cov_files.zip $WORKSPACE/workingcopy/*.bra $WORKSPACE/workingcopy/tncov.ord;
+          fi
+          exit $ret
+
+
+- publisher:
+    name: oam-artifact
+    publishers:
+      - archive:
+          artifacts: 'statistics/**, artifacts/**,**/*.rpm, *build_revision.txt,**/*.IMG,**/*.log,**/error.txt,**/*.MP*'

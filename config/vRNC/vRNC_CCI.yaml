@@ -1,0 +1,143 @@
+- defaults:
+    name: global
+    scmurl: 'scm_il'
+    branch: 'rcptrunk'
+
+
+- project:
+    name: vRNC_all
+    module_all:
+      !include module_all.yaml.inc
+    jobs:
+      - '{module_all}_vRNC'
+
+- project:
+    name: vRNC
+    module:
+      !include module_all.yaml.inc
+    jobs:
+      - '{module}_vRNC_COMPILE'
+      - '{module}_vRNC_STATIC_ANALYSIS'
+      - '{module}_vRNC_UT'
+
+- job-template:
+    name: '{module}_vRNC_COMPILE'
+    node: docker_image_vrnc
+    parameters:
+      - vRNC_PARA:
+          subsystem: '{module}'
+    project-type: freestyle
+    wrappers:
+      - vRNC_WRAPPERS
+    builders:
+      - vRNC_builder:
+         action: 'c'
+    publishers:
+      - COMPILE_ARTIFACT:
+          subsystem: '{module}'
+
+
+- job-template:
+    name: '{module}_vRNC_STATIC_ANALYSIS'
+    node: docker_image_vrnc
+    parameters:
+      - vRNC_PARA:
+          subsystem: '{module}'
+    project-type: freestyle
+    wrappers:
+      - vRNC_WRAPPERS
+    builders:
+      - vRNC_builder:
+         action: 's'
+    publishers:
+      - COMPILE_ARTIFACT:
+          subsystem: '{module}'
+
+- job-template:
+    name: '{module}_vRNC_UT'
+    node: docker_image_vrnc
+    parameters:
+      - vRNC_PARA:
+          subsystem: '{module}'
+    project-type: freestyle
+    wrappers:
+      - vRNC_WRAPPERS
+    builders:
+      - vRNC_builder:
+          action: 't'
+    publishers:
+      - COMPILE_ARTIFACT:
+          subsystem: '{module}'
+
+
+- job-template:
+    name: '{module_all}_vRNC'
+    project-type: flow
+    dsl: |
+        parallel (
+            {{ build("{module_all}_vRNC_COMPILE",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"],parent_buildnum:build.number) }},
+            {{ build("{module_all}_vRNC_STATIC_ANALYSIS",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"]) }},
+            {{ build("{module_all}_vRNC_UT",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"]) }},
+
+        )
+
+    triggers:
+      - vRNC_TRIGGER:
+          subsystem: '{module_all}'
+          scmurl: '{scmurl}'
+          branch: '{branch}'
+
+- trigger:
+    name: vRNC_TRIGGER
+    triggers:
+      - gerrit:
+         trigger-on:
+            - patchset-created-event
+         projects:
+            - project-compare-type: "PLAIN"
+              project-pattern: '{scmurl}/{subsystem}'
+              branches:
+                 - branch-compare-type: 'PLAIN'
+                   branch-pattern: '{branch}'
+         silent: false
+
+- wrapper:
+    name: vRNC_WRAPPERS
+    wrappers:
+      - timeout:
+          timeout: 90
+          type: absolute
+          fail: true
+      - workspace-cleanup
+      - timestamps
+
+- builder:
+    name: vRNC_builder
+    builders:
+      - shell: |
+          pubworspace=/workspace/cci/vrnc_pub_$EXECUTOR_NUMBER
+          git clone git@gitlab.china.nsn-net.net:platformci/sad-runner.git
+          svn export https://svne1.access.nsn.com/isource/svnroot/citools/cctools/trunk/OPTcheckout/git_vRNCco.sh
+          ./git_vRNCco.sh $subsystem $pubworspace $GERRIT_REFSPEC
+          export V={action}
+          export PRODUCT=vrnc
+          export PATH=$PATH:/apps/klocwork/bin
+          cd $WORKSPACE/sad-runner/
+          ./rcp_static_check.sh rcp $subsystem $pubworspace/workspace/ $WORKSPACE/statistics
+
+
+- parameter:
+    name: vRNC_PARA
+    parameters:
+      - string:
+          name: subsystem
+          default: '{subsystem}'
+          description: "subsystem name"
+
+- publisher:
+    name: COMPILE_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: 'statistics/**'
+      - workspace-cleanup
+

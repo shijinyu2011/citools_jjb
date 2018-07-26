@@ -1,0 +1,16 @@
+- SS_HAProxy:
+    scmurl: scm_rcp
+- SS_ILDeployment:
+    scmurl: scm_il
+- SS_QNDPM:
+    scmurl: scm_il
+- SS_RCPMsg:
+    scmurl: scm_rcp
+- SS_RCPMsgLib:
+    scmurl: scm_rcp
+- SS_RCPNTP:
+    scmurl: scm_rcp
+- SS_TestRCPNTP:
+    scmurl: scm_rcp
+- SS_ZMQLib:
+    scmurl: scm_rcp

@@ -1,0 +1,118 @@
+- scm:
+    name: svn-bescme
+    scm:
+      - svn:
+         workspaceupdater: wipeworkspace
+         repos:
+           - url: 'http://svne1.access.nsn.com/isource/svnroot/{svnrepo}'
+             basedir: repos
+
+- builder:
+        name: oam_builder
+        builders:
+           - shell: 
+               !include-raw: oam_builder.sh
+            
+- job-template:
+    name: '{name}_{module}_promote'
+    node: lswarm
+    description: 'oam wcdma16 promotion job'
+    parameters:
+      - string:
+          name: MODULE_SVN_URL
+          default: 'https://svne1.access.nsn.com/isource/svnroot/{svnrepo}'
+      - string:
+          name: BRANCH
+          default: 'https://svne1.access.nsn.com/isource/svnroot/{promote_branch}'          
+    project-type: freestyle
+    scm:
+      - svn:
+          url: 'http://svne1.access.nsn.com/isource/svnroot/hetranci/trigger/{promote_trigger}'
+    triggers:
+      - pollscm: 
+          cron: "H/5 * * * *"
+    builders:
+      - shell:
+          !include-raw-escape: oam_promote.sh
+
+- job-template:
+      name: '{name}_cci_{module}'
+      node: lswarm
+      disabled: false
+      builders:
+         - oam_builder:
+            MODULE: '{module}'
+            SAD_MODULE: '{sad_module}'
+            TNCHECK_DIR: '{m_TNCHECK_DIR}'
+            PAC: '{m_PAC}'
+            PROJECT: '{name}'
+            BRANCH: '{m_branch}'
+            SACK: '{m_sack}'
+            com: '{m_com}'
+            PRODUCT_NAME: '{m_product_name}'
+            repo: repos
+            cci_trigger: 'http://svne1.access.nsn.com/isource/svnroot/hetranci/trigger/{cci_trigger}'
+            smt_trigger: 'http://svne1.access.nsn.com/isource/svnroot/hetranci/trigger/{smt_trigger}'
+      properties:
+        - promoted-build:
+            names:
+              - "cci_done"
+              - "smt_done"
+      project-type: matrix
+      scm:
+        - svn-bescme:
+           svnrepo: '{svnrepo}'
+      triggers:
+        - gerrit:
+           trigger-on:
+            - patchset-created-event
+            - draft-published-event
+           projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'scm_ern/{project}'
+              branches:
+               - branch-compare-type: 'PLAIN'
+                 branch-pattern: '{gerrit_branch}'
+           silent: false
+           dynamic-trigger-enabled: false
+           server-name: hzgitv01.china.nsn-net.net
+        - pollscm: 
+            cron: "H/5 * * * *"
+      axes:
+        - axis:
+            type: user-defined
+            name: PRODUCT
+            values: '{obj:product}'
+        - axis:
+            type: user-defined
+            name: V
+            values: '{obj:action}'
+        - axis:
+            type: slave
+            name: label
+            values: 
+              - lswarm
+      execution-strategy:
+        combination-filter: |
+          (label=="lswarm" && ( (PRODUCT=="crnc" && (V=="m" || V=="c" || V=="c1"||V=="t" || V=="s")) || (PRODUCT=="mcrnc" && (V=="c" || V=="c1" ||V=="t"|| V=="s")) ))
+      wrappers:
+        - timeout:
+            timeout: 90
+            type: absolute
+            fail: true  
+        - workspace-cleanup                  
+      publishers:
+         - oam-artifact
+
+- publisher:
+    name: oam-artifact
+    publishers:
+        - archive:
+             artifacts: 'statistics/**, artifacts/**,**/*.rpm, *build_revision.txt,**/*.IMG,**/*.log,**/error.txt,**/*.MP*'
+        - workspace-cleanup:
+            clean-if:
+              - success: true
+              - failure: true
+              - unstable: true
+              - aborted: true
+              - not-built: true

@@ -1,0 +1,277 @@
+- project:
+    name: RCP_all
+    module_all:
+      !include module.yaml.inc
+    jobs:
+      - '{module_all}'
+
+- project:
+    name: RCP_no_ut_ft
+    module_no_ut_ft:
+      !include module_no_ut_ft.yaml.inc
+    jobs:
+      - '{module_no_ut_ft}'
+
+- project:
+    name: RCP_no_ut
+    module_no_ut:
+      !include module_no_ut.yaml.inc
+    jobs:
+      - '{module_no_ut}'
+
+- project:
+    name: RCP
+    module:
+      !include module_all.yaml.inc
+    jobs:
+      - '{module}_COMPILE'
+      - '{module}_UT'
+      - '{module}_STATIC_ANALYSIS'
+      - '{module}_IMAGE_PATCH_UPLOAD'
+      - '{module}_FT'
+
+- job-template:
+    name: '{module_all}'
+    project-type: flow
+    dsl: |
+        parallel (
+            {{ build("{module_all}_COMPILE",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"],parent_buildnum:build.number) }},
+            {{ build("{module_all}_STATIC_ANALYSIS",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"]) }},
+            {{ build("{module_all}_UT",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"]) }}
+        )
+        build("{module_all}_image_patch_upload",target_image_name:params["GERRIT_REFSPEC"],parent_buildnum:build.number)
+        build("{module_all}_FT",DELIVERY_NAME:params["GERRIT_REFSPEC"])
+    triggers:
+      - RCP_TRIGGER:
+          subsystem: '{module_all}'
+          scmurl: '{scmurl}'
+
+- job-template:
+    name: '{module_no_ut}'
+    project-type: flow
+    dsl: |
+        parallel (
+            {{ build("{module_no_ut}_COMPILE",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"],parent_buildnum:build.number) }},
+            {{ build("{module_no_ut}_STATIC_ANALYSIS",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"]) }},
+        )
+        build("{module_no_ut}_image_patch_upload",target_image_name:params["GERRIT_REFSPEC"],parent_buildnum:build.number)
+        build("{module_no_ut}_FT",DELIVERY_NAME:params["GERRIT_REFSPEC"])
+    triggers:
+      - RCP_TRIGGER:
+          subsystem: '{module_no_ut}'
+          scmurl: '{scmurl}'
+          
+- job-template:
+    name: '{module_no_ut_ft}'
+    project-type: flow
+    dsl: |
+        parallel (
+            {{ build("{module_no_ut_ft}_COMPILE",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"],parent_buildnum:build.number) }},
+            {{ build("{module_no_ut_ft}_STATIC_ANALYSIS",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"]) }},
+        )
+        build("{module_no_ut_ft}_image_patch_upload",target_image_name:params["GERRIT_REFSPEC"],parent_buildnum:build.number)
+    triggers:
+      - RCP_TRIGGER:
+          subsystem: '{module_no_ut_ft}'
+          scmurl: '{scmurl}'
+          
+- job-template:
+    name: '{module}_COMPILE'
+    node: docker_image
+    parameters: 
+      - COMPILE_PARA:
+          subsystem: '{module}'
+    project-type: freestyle
+    wrappers: 
+      - RCP_WRAPPERS
+    builders: 
+      - COMPILE_builder
+    publishers:
+      - COMPILE_ARTIFACT:
+          subsystem: '{module}'
+
+- job-template:
+    name: '{module}_STATIC_ANALYSIS'
+    node: docker_image
+    parameters:
+      - COMPILE_PARA:
+          subsystem: '{module}'
+    project-type: freestyle
+    wrappers: 
+      - RCP_WRAPPERS
+    builders: 
+      - STATISTIC_builder
+    publishers:
+      - STATIC_ARTIFACT
+
+- job-template:
+    name: '{module}_UT'
+    node: docker_image
+    parameters:
+      - COMPILE_PARA:
+          subsystem: '{module}'
+    project-type: freestyle
+    wrappers: 
+      - RCP_WRAPPERS
+    builders: 
+      - UT_builder
+    publishers:
+      - UT_ARTIFACT
+      
+- job-template:
+    name: '{module}_IMAGE_PATCH_UPLOAD'
+    node: fedora20
+    parameters:
+      !include image_upload_args.yaml.inc
+    project-type: freestyle
+    wrappers:
+      - RCP_WRAPPERS
+    builders:
+      - UPLOAD_IMAGE_builder:
+    publishers:
+      - UPLOAD_IMAGE_ARTIFACT:
+
+- job-template:
+    name: '{module}_FT'
+    node: rcpft
+    parameters:
+      !include rcpargs.yaml.inc
+    project-type: freestyle     
+    wrappers:
+      - RCP_WRAPPERS
+    builders:
+      - FT_builder:
+    publishers:
+      - FT-ARTIFACT
+
+- parameter:
+    name: COMPILE_PARA
+    parameters:
+      - string:
+          name: subsystem
+          default: '{subsystem}'
+          description: "subsystem name"
+      - string:
+          name: parent_buildnum
+          default: '1'
+          description: "parent build number"
+
+- wrapper:
+    name: RCP_WRAPPERS
+    wrappers: 
+      - timeout:
+          timeout: 90
+          type: absolute
+          fail: true
+      - workspace-cleanup
+      - timestamps
+
+- trigger:
+    name: RCP_TRIGGER
+    triggers:
+      - gerrit:
+         trigger-on:
+            - patchset-created-event
+         projects:
+            - project-compare-type: "PLAIN"
+              project-pattern: '{scmurl}/{subsystem}'
+              branches:
+                 - branch-compare-type: 'PLAIN'
+                   branch-pattern: 'cloud_controller_dev' 
+- builder:
+    name: COMPILE_builder
+    builders:
+      - shell: |
+          pubworspace=/workspace/cci/pub_$EXECUTOR_NUMBER
+          git clone git@gitlab.china.nsn-net.net:platformci/sad-runner.git
+          svn export https://svne1.access.nsn.com/isource/svnroot/citools/cctools/trunk/OPTcheckout/git_rcpco.sh
+          ./git_rcpco.sh $subsystem $GERRIT_REFSPEC $pubworspace
+          export V=c
+          export PRODUCT=cwlc
+          cd $WORKSPACE/sad-runner/
+          ./rcp_static_check.sh rcp $subsystem $pubworspace/workspace/ $WORKSPACE/statistics
+- builder:
+    name: STATISTIC_builder
+    builders:
+      - shell: |
+          pubworspace=/workspace/cci/pub_$EXECUTOR_NUMBER
+          git clone git@gitlab.china.nsn-net.net:platformci/sad-runner.git
+          svn export https://svne1.access.nsn.com/isource/svnroot/citools/cctools/trunk/OPTcheckout/git_rcpco.sh
+          ./git_rcpco.sh $subsystem $GERRIT_REFSPEC $pubworspace
+          export V=s
+          export PATH=$PATH:/apps/klocwork/bin
+          export PRODUCT=cwlc
+          cd $WORKSPACE/sad-runner/
+          ./rcp_static_check.sh rcp $subsystem $pubworspace/workspace/ $WORKSPACE/statistics
+- builder:
+    name: UT_builder
+    builders:
+      - shell: |
+          pubworspace=/workspace/cci/pub_$EXECUTOR_NUMBER
+          git clone git@gitlab.china.nsn-net.net:platformci/sad-runner.git
+          svn export https://svne1.access.nsn.com/isource/svnroot/citools/cctools/trunk/OPTcheckout/git_rcpco.sh
+          ./git_rcpco.sh $subsystem $GERRIT_REFSPEC $pubworspace
+          cd $pubworspace/workspace
+          svn co http://svne1.access.nsn.com/isource/svnroot/SS_ILThirdpart/branches/cloud_controller_dev/SS_ILThirdpart/
+          export V=t
+          export PRODUCT=cwlc
+          cd $WORKSPACE/sad-runner/
+          ./rcp_static_check.sh rcp $subsystem $pubworspace/workspace/ $WORKSPACE/statistics
+- builder:
+    name: UPLOAD_IMAGE_builder
+    builders:
+      - shell:
+          !include-raw uploadimage.sh
+          
+- builder:
+    name: FT_builder
+    builders:
+      - shell:
+          !include-raw rcpft.sh
+          
+- publisher:
+    name: COMPILE_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: 'statistics/**'
+      - scp:
+          site: 'eclipseupd.china.nsn-net.net'
+          files:
+             - target: 'tar/{subsystem}/$parent_buildnum/'
+               source: '**/*.tar.xz'
+               copy-after-failure: true
+
+- publisher:
+    name: STATIC_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: 'statistics/**'
+
+- publisher:
+    name: UT_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: 'statistics/**'
+
+- publisher:
+    name: FT-ARTIFACT
+    publishers:
+      - archive:
+          artifacts: '**/logs/*,**/errlogs/*'
+      - robot:
+          output-path: logs/
+          log-file-link: 
+          report-html: report_*
+          log-html: log_*
+          output-xml: output_*
+          pass-threshold: 100.0
+          unstable-threshold: 1.0
+          other-files: ""
+
+- publisher:
+    name: UPLOAD_IMAGE_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: '**/*installed_pkg-list'
+
+

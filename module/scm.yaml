@@ -1,0 +1,47 @@
+- scm:
+    name: commonil_trigger_scm
+    scm:
+      - svn:
+           workspaceupdater: update
+           repos:
+             - url: 'https://svne1.access.nsn.com/isource/svnroot/{sub}/branches/VirtualTrunk'
+               credentials-id: '4c600341-7028-4275-89ee-969443268669'
+               basedir: 'VirtualTrunk'
+               repo-depth: 'empty'
+             - url: 'https://svne1.access.nsn.com/isource/svnroot/{sub}/branches/cloudVT'
+               credentials-id: '4c600341-7028-4275-89ee-969443268669'
+               basedir: 'cloudVT'
+               repo-depth: 'empty'
+
+- scm:
+    name: cloudvt_trigger_scm
+    scm:
+      - svn:
+           workspaceupdater: update
+           repos:
+             - url: 'https://svne1.access.nsn.com/isource/svnroot/{sub}/branches/cloudVT'
+               credentials-id: '4c600341-7028-4275-89ee-969443268669'
+               basedir: 'cloudVT'
+               repo-depth: 'empty'
+
+- scm:
+    name: virtualtrunk_trigger_scm
+    scm:
+      - svn:
+           workspaceupdater: update
+           repos:
+             - url: 'https://svne1.access.nsn.com/isource/svnroot/{sub}/branches/VirtualTrunk'
+               credentials-id: '4c600341-7028-4275-89ee-969443268669'
+               basedir: 'VirtualTrunk'
+               repo-depth: 'empty'
+
+- scm:
+    name: commomil_cci_script
+    scm:
+      - svn:
+           workspaceupdater: update
+           repos:
+             - url: 'https://svne1.access.nokiasiemensnetworks.com/isource/svnroot/citools/scripts/trunk/ILCCI'
+               credentials-id: '4c600341-7028-4275-89ee-969443268669'
+               basedir: 'ILCCI'
+               repo-depth: 'infinity'

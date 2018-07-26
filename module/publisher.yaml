@@ -1,0 +1,133 @@
+- publisher:
+    name: commonil_trigger_artifacts
+    publishers:
+      - trigger-parameterized-builds:
+         - project: 'CCI_{sub}_FLOW'
+           property-file: 'property'
+           fail-on-missing: true
+           condition: UNSTABLE_OR_BETTER
+- publisher:
+    name: commonil_cci_artifacts
+    publishers:
+      - archive:
+         artifacts: 'logs/**'
+         allow-empty: 'true'
+- publisher:
+    name: commonil_ilft_artifacts
+    publishers:
+      - archive:
+         artifacts: 'log/'
+      - robot:
+          output-path: log/FPC_log/Robot_log
+          log-file-link:
+          report-html: report_*.html
+          log-html: log_*.html
+          output-xml: output_*
+          pass-threshold: 100.0
+          unstable-threshold: 1.0
+          other-files: ""
+
+- publisher:
+    name: COMPILE_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: 'statistics/**, **/sdlma.out'
+          excludes: 'sad-runner/**, sandbox/**'
+      - workspace-cleanup
+
+- publisher:
+    name: STATIC_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: 'statistics/**'
+          excludes: 'sad-runner/**, sandbox/**'
+      - workspace-cleanup
+
+- publisher:
+    name: UT_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: 'statistics/**'
+          excludes: 'sad-runner/**, sandbox/**'
+      - workspace-cleanup
+
+- publisher:
+    name: FT_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: '**/rfcli_output/**/*'
+      - robot:
+          output-path: rcpci/rfcli_output/
+          log-file-link: 
+          report-html: report.html
+          log-html: log.html
+          output-xml: output.xml
+          pass-threshold: 100.0
+          unstable-threshold: 1.0
+          other-files: ""
+      - workspace-cleanup
+
+- publisher:
+    name: UPLOAD_IMAGE_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: '**/*installed_pkg-list'
+      - workspace-cleanup
+
+
+- publisher:
+    name: Build_Flow_ARTIFACT
+    publishers:
+      - trigger-parameterized-builds:
+         - project: '{module}_{product}_CodeReview'
+           condition: SUCCESS
+           predefined-parameters: |
+                GRADE=+1
+                GERRIT_PATCHSET_REVISION=$GERRIT_PATCHSET_REVISION
+         - project: '{module}_{product}_CodeReview'
+           condition: FAILED
+           predefined-parameters: |
+                GRADE=-1
+                GERRIT_PATCHSET_REVISION=$GERRIT_PATCHSET_REVISION
+
+- publisher:
+    name: CLOUD_FT_MAIL
+    publishers:
+      - postbuildscript:
+          builders:
+            - shell: |
+                #!/bin/bash
+                svn co --username hzci --password b2a6eefb --non-interactive --trust-server-cert \
+                --no-auth-cache https://svne1.access.nsn.com/isource/svnroot/citools/scripts/trunk/ciscript/tstfile/tst/rcp/python2 mypython
+
+                export PYTHONPATH=$WORKSPACE/mypython:$PYTHONPATH
+
+                chmod +x ./cciscript/ft/ft_mail.sh
+                ./cciscript/ft/ft_mail.sh
+          script-only-if-succeeded: False
+          script-only-if-failed: False
+          mark-unstable-if-failed: True
+
+- publisher:
+    name: BCN_FT_MAIL
+    publishers:
+      - postbuildscript:
+          builders:
+            - shell: |
+                #!/bin/bash
+                rm -fr cciscript
+                git clone http://gerrit.nsn-net.net/citools/cciscript
+                if [ $? != 0 ];then
+                  echo "cloud not clone cciscript repos.exit"
+                  exit 0
+                fi
+                svn co --username hzci --password b2a6eefb --non-interactive --trust-server-cert \
+                --no-auth-cache https://svne1.access.nsn.com/isource/svnroot/citools/scripts/trunk/ciscript/tstfile/tst/rcp/python2 mypython
+
+                export PYTHONPATH=$WORKSPACE/mypython:$PYTHONPATH
+
+                chmod +x ./cciscript/ft/ft_mail.sh
+                ./cciscript/ft/ft_mail.sh
+          script-only-if-succeeded: False
+          script-only-if-failed: False
+          mark-unstable-if-failed: True

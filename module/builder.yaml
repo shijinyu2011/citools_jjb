@@ -1,0 +1,120 @@
+- builder:
+    name: commonil_trigger_builder 
+    builders:
+      - shell:
+          !include-raw scripts/commonil_trigger.sh
+- builder:
+    name: commonil_cci_builder
+    builders:
+      - shell:
+          !include-raw scripts/commonil_cci_git.sh
+- builder:
+    name: commonil_cci_git_builder
+    builders:
+      - shell:
+          !include-raw scripts/commonil_cci_git.sh
+- builder:
+    name: commonil_cci_image_builder
+    builders:
+      - copyartifact:
+          project: 'CCI_{module}_CLOUD/VARENT=wr-clouldil,label=CLOUDCCI'
+          filter: "logs/*.tar.xz,logs/*.rpm"
+          which-build: last-successful
+          target: tars
+          flatten: true
+      - shell:
+          !include-raw scripts/uploadimage.sh
+
+- builder:
+    name: commomil_ilft_builder
+    builders:
+      - copyartifact:
+          project: 'CCI_{module}_IL/VARENT=wr-mips-6wind-bmpp,label=ILCCI'
+          filter: 'logs/*.rpm'
+          which-build: last-successful
+          target: cci_rpms
+          flatten: true
+      - copyartifact:
+          project: 'CCI_{module}_IL/VARENT=wr-mips-bmpp,label=ILCCI'
+          filter: 'logs/*.rpm'
+          which-build: last-successful
+          target: cci_rpms
+          flatten: true
+      - copyartifact:
+          project: 'CCI_{module}_IL/VARENT=wr-mips-bmpp,label=ILCCI'
+          filter: 'logs/*.txt'
+          which-build: last-successful
+          flatten: true
+          optional: true            
+      - shell:
+          !include-raw scripts/ilccift.sh
+      - ant :
+          targets: "FT"
+          buildfile: "ILCCI/build.xml"
+          properties:
+            subsystem.name: '{module}'
+            cci.job.name: "CCI_{module}_IL"
+            hardware.name: "BCN"
+            case.files: 'CasePool/DC/CSS/Calendar_time_library/'
+            normal.syslog.alarm.check: false
+
+
+- builder:
+    name: RCP_CCI_builder
+    builders:
+      - shell:
+          !include-raw scripts/rcpcci.sh
+
+- builder:
+    name: CLOULDIL_CCI_builder
+    builders:
+      - shell:
+          !include-raw scripts/clouldilcci.sh
+
+- builder:
+    name: RCP_COMPILE_builder
+    builders:
+      - shell:
+          !include-raw scripts/rcpcompile.sh
+
+- builder:
+    name: RCP_UT_builder
+    builders:
+      - shell:
+          !include-raw scripts/rcput.sh
+
+- builder:
+    name: RCP_STATISTIC_builder
+    builders:
+      - shell:
+          !include-raw scripts/rcpstatistic.sh
+ 
+- builder:
+    name: UPLOAD_IMAGE_builder
+    builders:
+      - copyartifact:
+          project: '{module}_{product}_FT_COMPILE'
+          filter: "statistics/*.tar.xz"
+          which-build: last-successful
+          target: tars
+      - shell: 
+          !include-raw scripts/uploadimage.sh
+          
+- builder:
+    name: FT_builder
+    builders:
+      - copyartifact:
+          project: 'CCI_{module}_CLOUD/VARENT=wr-clouldil,label=CLOUDCCI'
+          filter: 'logs/*.txt'
+          which-build: last-successful
+          flatten: true
+          optional: true      
+      - shell: 
+          !include-raw scripts/rcpft.sh
+
+- builder:
+    name: CodeRevew_builder
+    builders:
+      - shell:
+          !include-raw scripts/codereview.sh
+

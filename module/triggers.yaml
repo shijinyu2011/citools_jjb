@@ -1,0 +1,70 @@
+- trigger:
+   name: Gerrit_Trigger
+   triggers:
+     - gerrit:
+        trigger-on:
+           - patchset-created-event
+        projects:
+           - project-compare-type: "PLAIN"
+             project-pattern: '{pattern}'
+             branches:
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{branch}'
+        override-votes: true
+        gerrit-build-successful-verified-value: '0'
+        gerrit-build-failed-verified-value: '0'
+        gerrit-build-unstable-verified-value: '0'
+        gerrit-build-notbuilt-verified-value: '0'
+        gerrit-build-started-codereview-value: '0'
+        gerrit-build-successful-codereview-value: '1'
+        gerrit-build-failed-codereview-value: '-1'
+        gerrit-build-unstable-codereview-value: '-1'
+        gerrit-build-notbuilt-codereview-value: '0'
+
+- trigger:
+   name: Gerrit_Trigger_FT
+   triggers:
+     - gerrit:
+        trigger-on:
+           - comment-added-contains-event:
+                comment-contains-value: 'Code\-Review\+2'
+        projects:
+           - project-compare-type: "PLAIN"
+             project-pattern: '{pattern}'
+             branches:
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{branch}'
+
+
+- trigger:
+   name: commomil_trigger_trigger
+   triggers:
+     - gerrit:
+        trigger-on:
+           - change-merged-event
+        projects:
+           - project-compare-type: "PLAIN"
+             project-pattern: 'scm_il/{sub}'
+             branches:
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: 'cloudVT'
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: 'VirtualTrunk'
+        override-votes: true
+        silent: false
+- trigger:
+   name: commonil_cci_git_trigger
+   triggers:
+     - gerrit:
+        trigger-on:
+           - patchset-created-event
+        projects:
+           - project-compare-type: "PLAIN"
+             project-pattern: 'scm_il/{subsystem}'
+             branches:
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: 'cloudVT'
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: 'VirtualTrunk'
+        override-votes: true
+        silent: false 

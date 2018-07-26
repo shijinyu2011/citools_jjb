@@ -1,0 +1,141 @@
+- defaults:
+    name: global
+    scmurl: 'scm_rcp'
+    branch: 'rcptrunk'
+
+
+- project:
+    name: cBTS_all
+    module_all:
+      !include module_all.yaml.inc
+    jobs:
+      - '{module_all}_cBTS'
+
+- project:
+    name: cBTS
+    module:
+      !include module_all.yaml.inc
+    jobs:
+      - '{module}_cBTS_COMPILE'
+      - '{module}_cBTS_STATIC_ANALYSIS'
+      - '{module}_cBTS_UT'
+
+- job-template:
+    name: '{module}_cBTS_COMPILE'
+    node: fastpath_longterm
+    parameters:
+      - cBTS_PARA:
+          subsystem: '{module}'
+    project-type: freestyle
+    wrappers:
+      - cBTS_WRAPPERS
+    builders:
+      - cBTS_builder:
+         action: 'c'
+    publishers:
+      - COMPILE_ARTIFACT:
+          subsystem: '{module}'
+
+
+- job-template:
+    name: '{module}_cBTS_STATIC_ANALYSIS'
+    node: fastpath_longterm
+    parameters:
+      - cBTS_PARA:
+          subsystem: '{module}'
+    project-type: freestyle
+    wrappers:
+      - cBTS_WRAPPERS
+    builders:
+      - cBTS_builder:
+         action: 's'
+    publishers:
+      - COMPILE_ARTIFACT:
+          subsystem: '{module}'
+
+- job-template:
+    name: '{module}_cBTS_UT'
+    node: fastpath_longterm
+    parameters:
+      - cBTS_PARA:
+          subsystem: '{module}'
+    project-type: freestyle
+    wrappers:
+      - cBTS_WRAPPERS
+    builders:
+      - cBTS_builder:
+          action: 't'
+    publishers:
+      - COMPILE_ARTIFACT:
+          subsystem: '{module}'
+
+
+- job-template:
+    name: '{module_all}_cBTS'
+    project-type: flow
+    dsl: |
+        parallel (
+            {{ build("{module_all}_cBTS_COMPILE",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"],parent_buildnum:build.number) }},
+            {{ build("{module_all}_cBTS_STATIC_ANALYSIS",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"]) }},
+            {{ build("{module_all}_cBTS_UT",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"],GERRIT_REFSPEC:params["GERRIT_REFSPEC"]) }},
+
+        )
+
+    triggers:
+      - cBTS_TRIGGER:
+          subsystem: '{module_all}'
+          scmurl: '{scmurl}'
+          branch: '{branch}'
+
+- trigger:
+    name: cBTS_TRIGGER
+    triggers:
+      - gerrit:
+         trigger-on:
+            - patchset-created-event
+         projects:
+            - project-compare-type: "PLAIN"
+              project-pattern: '{scmurl}/{subsystem}'
+              branches:
+                 - branch-compare-type: 'PLAIN'
+                   branch-pattern: '{branch}'
+         silent: false
+
+- wrapper:
+    name: cBTS_WRAPPERS
+    wrappers:
+      - timeout:
+          timeout: 90
+          type: absolute
+          fail: true
+      - workspace-cleanup
+      - timestamps
+
+- builder:
+    name: cBTS_builder
+    builders:
+      - shell: |
+              git clone ssh://hzci@hzgitv01.china.nsn-net.net:29418/citools/cciscript
+              git clone git@gitlab.china.nsn-net.net:platformci/sad-runner.git -b long
+              cd cciscript/checkout
+              python checkout.py -s "$subsystem,SS_DPDK"  -d ../../source -p rcp
+              export V={action}
+              export PATH=$PATH:/apps/klocwork/bin
+              export PRODUCT=cbts
+              cd $WORKSPACE/sad-runner/
+              ./rcp_static_check.sh rcp $subsystem $WORKSPACE/source/ $WORKSPACE/statistics
+- parameter:
+    name: cBTS_PARA
+    parameters:
+      - string:
+          name: subsystem
+          default: '{subsystem}'
+          description: "subsystem name"
+
+- publisher:
+    name: COMPILE_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: 'statistics/**'
+      - workspace-cleanup
+

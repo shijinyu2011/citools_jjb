@@ -1,0 +1,36 @@
+- project:
+    name: RCP
+    module:
+      - SS_RCPMsg
+      - SS_RCPMsg1
+    jobs:
+      - '{module}_FT'
+
+- job-template:
+    name: '{module}_FT'
+    node: hzwebserver02
+    parameters:
+      !include rcpargs.yaml.inc
+    project-type: freestyle
+     
+    wrappers:
+      - timeout:
+          timeout: 90
+          type: absolute
+          fail: true
+    builders:
+      - RCP-FT:
+    publishers:
+      - RCP-ARTIFACT
+
+- builder:
+    name: RCP-FT
+    builders:
+      - shell:
+          !include-raw rcpft.sh
+        
+- publisher:
+    name: RCP-ARTIFACT
+    publishers:
+      - archive:
+          artifacts: 'logs/**'

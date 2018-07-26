@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hudson.plugins.sectioned__view.SectionedView plugin="sectioned-view@1.18">
+  <name>feature01</name>
+  <filterExecutors>false</filterExecutors>
+  <filterQueue>false</filterQueue>
+  <properties class="hudson.model.View$PropertyList"/>
+  <sections>
+    <hudson.plugins.sectioned__view.ListViewSection>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+      </jobNames>
+      <jobFilters/>
+      <name>feature01</name>
+      <includeRegex>feature01</includeRegex>
+      <width>FULL</width>
+      <alignment>CENTER</alignment>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+    </hudson.plugins.sectioned__view.ListViewSection>
+    <hudson.plugins.sectioned__view.ListViewSection>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../hudson.plugins.sectioned__view.ListViewSection/jobNames/comparator"/>
+      </jobNames>
+      <jobFilters/>
+      <name>Subsystem CCI</name>
+      <includeRegex>feature01-\w+_(UT|COMPILE|STATIC_ANALYSIS)</includeRegex>
+      <width>FULL</width>
+      <alignment>CENTER</alignment>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+    </hudson.plugins.sectioned__view.ListViewSection>
+    <hudson.plugins.sectioned__view.ListViewSection>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../hudson.plugins.sectioned__view.ListViewSection/jobNames/comparator"/>
+      </jobNames>
+      <jobFilters/>
+      <name>feature01-testing</name>
+      <includeRegex>feature01-(FT|IMAGE_PATCH_UPLOAD)</includeRegex>
+      <width>FULL</width>
+      <alignment>CENTER</alignment>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+    </hudson.plugins.sectioned__view.ListViewSection>
+  </sections>
+</hudson.plugins.sectioned__view.SectionedView>

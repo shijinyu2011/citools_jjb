@@ -1,0 +1,63 @@
+- parameter:
+    name: commonil_cci_parameter
+    parameters:
+      - string:
+          name: subsystem
+          default: '{subsystem}'
+      - string:
+          name: refs
+- parameter:
+    name: commonil_image_parameter
+    parameters:
+      - string:
+          name: subsystem
+          default: "{module}"
+      - string:
+         name: product
+         default: "vRNC"
+      - string:
+         name: GERRIT_PATCHSET_REVISION
+
+
+
+- parameter:
+    name: RCP_COMPILE_PARA
+    parameters:
+      - string:
+          name: subsystem
+          default: '{subsystem}'
+          description: "subsystem name"
+      - string:
+          name: parent_buildnum
+          default: '1'
+          description: "parent build number"
+      - string:
+          name: GERRIT_REFSPEC
+          default: '{branch}'
+          description: "Gerrit Patch Set: refs/changes/33/27333/1"
+
+- parameter:
+    name: RCP_FT_IMAGE
+    parameters:
+      - string:
+          name: subsystem
+          default: "{module}"
+      - string:
+         name: product
+         default: "{product}"
+      - string:
+         name: GERRIT_PATCHSET_REVISION
+
+- parameter:
+    name: RCP_FT_PARA
+    parameters:
+      - string:
+         name: GERRIT_PATCHSET_REVISION
+         default: 
+      - string:
+         name: product
+         default: '{product}'
+      - string:
+         name: subsystem
+         default: '{module}'
+

@@ -1,0 +1,60 @@
+- project:
+    name: RCP
+    module:
+      - SS_RCPMsg
+    jobs:
+      - '{module}_buildimage'
+
+- job-template:
+    name: '{module}_buildimage'
+    node: lswarm_fedora20
+    scm:
+      - RCP-TRIGGER
+    parameters:
+      - string:
+          name: base_img
+      - string:
+          name: vgp_package
+    project-type: freestyle
+     
+    wrappers:
+      - timeout:
+          timeout: 90
+          type: absolute
+          fail: true
+    builders:
+      - RCP-buildimage:
+    publishers:
+      - RCP-image:
+          buildname: "{module}"
+
+- scm:
+    name: RCP-TRIGGER
+    scm:
+      - svn:
+          workspaceupdater: update
+          repos:
+            - url: https://svne1.access.nsn.com/isource/svnroot/IPA_CI_triggers/RCP_CI_trigger
+              basedir: RCP_CI_trigger
+
+- builder:
+    name: RCP-buildimage
+    builders:
+      - shell:
+          !include-raw-escape createimage.sh
+
+- publisher:
+    name: RCP-image
+    publishers:
+      - trigger-parameterized-builds:
+          - project: "{buildname}_UP2OS"
+            predefined-parameters: image_path=/opt/www-wifi/img/$JOB_NAME/$BUILD_NUMBER/rcpci.qcow2
+            condition: UNSTABLE_OR_BETTER
+      - archive:
+          artifacts: '**/*installed_pkg-list'
+      - scp:
+          site: '10.159.218.20'
+          files:
+            - target: 'img/$JOB_NAME/$BUILD_NUMBER/'
+              source: '**/built_img/*'
+              keep-hierarchy: true

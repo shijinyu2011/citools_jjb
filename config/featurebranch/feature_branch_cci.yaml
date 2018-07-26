@@ -1,0 +1,199 @@
+- project:
+    name: feature_branch_module_cci
+    module:
+    jobs:
+      - '{feature}-{module}_COMPILE'
+      - '{feature}-{module}_UT'
+      - '{feature}-{module}_STATIC_ANALYSIS'
+ 
+- project:
+    name: feature_branch_testing
+    feature:
+    jobs:
+      - '{feature}-IMAGE_PATCH_UPLOAD'
+      - '{feature}-FT'
+             
+- job-template:
+    name: '{feature}-{module}_COMPILE'
+    node: docker_image
+    parameters: 
+      - COMPILE_PARA:
+          subsystem: '{module}'
+    project-type: freestyle
+    wrappers: 
+      - RCP_WRAPPERS
+    builders: 
+      - COMPILE_builder
+    publishers:
+      - COMPILE_ARTIFACT:
+          feature: '{feature}'
+
+- job-template:
+    name: '{feature}-{module}_STATIC_ANALYSIS'
+    node: docker_image
+    parameters:
+      - COMPILE_PARA:
+          subsystem: '{module}'
+    project-type: freestyle
+    wrappers: 
+      - RCP_WRAPPERS
+    builders: 
+      - STATISTIC_builder
+    publishers:
+      - STATIC_ARTIFACT
+
+- job-template:
+    name: '{feature}-{module}_UT'
+    node: docker_image
+    parameters:
+      - COMPILE_PARA:
+          subsystem: '{module}'
+    project-type: freestyle
+    wrappers: 
+      - RCP_WRAPPERS
+    builders: 
+      - UT_builder
+    publishers:
+      - UT_ARTIFACT
+      
+- job-template:
+    name: '{feature}-IMAGE_PATCH_UPLOAD'
+    node: fedora20
+    parameters:
+      !include ../RCP/image_upload_args.yaml.inc
+    project-type: freestyle
+    wrappers:
+      - RCP_WRAPPERS
+    builders:
+      - UPLOAD_IMAGE_builder:
+    publishers:
+      - UPLOAD_IMAGE_ARTIFACT:
+
+- job-template:
+    name: '{feature}-FT'
+    node: rcpft
+    parameters:
+      !include ../RCP/rcpargs.yaml.inc
+    project-type: freestyle     
+    wrappers:
+      - RCP_WRAPPERS
+    builders:
+      - FT_builder:
+    publishers:
+      - FT-ARTIFACT
+
+- parameter:
+    name: COMPILE_PARA
+    parameters:
+      - string:
+          name: subsystem
+          default: '{subsystem}'
+          description: "subsystem name"
+      - string:
+          name: parent_buildnum
+          default: '1'
+          description: "parent build number"
+
+- wrapper:
+    name: RCP_WRAPPERS
+    wrappers: 
+      - timeout:
+          timeout: 90
+          type: absolute
+          fail: true
+      - workspace-cleanup
+      - timestamps
+
+- trigger:
+    name: RCP_TRIGGER
+    triggers:
+      - gerrit:
+         trigger-on:
+            - patchset-created-event
+         projects:
+            - project-compare-type: "PLAIN"
+              project-pattern: '{scmurl}/{subsystem}'
+              branches:
+                 - branch-compare-type: 'PLAIN'
+                   branch-pattern: '{feature_branch}' 
+- builder:
+    name: COMPILE_builder
+    builders:
+      - shell: |
+          pubworspace=/workspace/cci/pub_$EXECUTOR_NUMBER
+          git clone git@gitlab.china.nsn-net.net:platformci/sad-runner.git
+          svn export https://svne1.access.nsn.com/isource/svnroot/citools/cctools/trunk/OPTcheckout/git_rcpco.sh
+          ./git_rcpco.sh $subsystem $GERRIT_REFSPEC $pubworspace
+          export V=c
+          python $WORKSPACE/sad-runner/sad_runner.py -p rcp -m $subsystem -b $pubworspace/workspace/$subsystem -o $WORKSPACE/statistics
+
+- builder:
+    name: STATISTIC_builder
+    builders:
+      - shell: |
+          pubworspace=/workspace/cci/pub_$EXECUTOR_NUMBER
+          git clone git@gitlab.china.nsn-net.net:platformci/sad-runner.git
+          svn export https://svne1.access.nsn.com/isource/svnroot/citools/cctools/trunk/OPTcheckout/git_rcpco.sh
+          ./git_rcpco.sh $subsystem $GERRIT_REFSPEC $pubworspace
+          export V=s
+          export PATH=$PATH:/apps/klocwork/bin
+          python $WORKSPACE/sad-runner/sad_runner.py -p rcp -m $subsystem -b $pubworspace/workspace/$subsystem -o $WORKSPACE/statistics
+
+- builder:
+    name: UT_builder
+    builders:
+      - shell: |
+          pubworspace=/workspace/cci/pub_$EXECUTOR_NUMBER
+          git clone git@gitlab.china.nsn-net.net:platformci/sad-runner.git
+          svn export https://svne1.access.nsn.com/isource/svnroot/citools/cctools/trunk/OPTcheckout/git_rcpco.sh
+          ./git_rcpco.sh $subsystem $GERRIT_REFSPEC $pubworspace
+          cd $pubworspace/workspace
+          svn co http://svne1.access.nsn.com/isource/svnroot/SS_ILThirdpart/branches/cloud_controller_dev/SS_ILThirdpart/
+          export V=t
+          python $WORKSPACE/sad-runner/sad_runner.py -p rcp -m $subsystem -b $pubworspace/workspace/$subsystem -o $WORKSPACE/statistics
+
+- builder:
+    name: UPLOAD_IMAGE_builder
+    builders:
+      - shell:
+          !include-raw ../RCP/uploadimage.sh
+          
+- builder:
+    name: FT_builder
+    builders:
+      - shell:
+          !include-raw ../RCP/rcpft.sh
+          
+- publisher:
+    name: COMPILE_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: 'statistics/**'
+      - scp:
+          site: 'hzwebserver02.china.nsn-net.net'
+          files:
+             - target: 'tar/{feature}/$BUILD_NUMBER/'
+               source: '**/*.tar.xz'
+               copy-after-failure: true
+- publisher:
+    name: STATIC_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: 'statistics/**'
+- publisher:
+    name: UT_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: 'statistics/**'
+- publisher:
+    name: FT-ARTIFACT
+    publishers:
+      - archive:
+          artifacts: '**/logs/*,**/errlogs/*'               
+- publisher:
+    name: UPLOAD_IMAGE_ARTIFACT
+    publishers:
+      - archive:
+          artifacts: '**/*installed_pkg-list'
+
+

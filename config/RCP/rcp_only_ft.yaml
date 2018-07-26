@@ -1,0 +1,59 @@
+- project:
+    name: RCP_onlyft
+    module_onlyft:
+      !include module_only_ft.yaml.inc
+    jobs:
+      - '{module_onlyft}_FT'
+
+- job-template:
+    name: '{module_onlyft}_FT'
+    node: rcpft
+    parameters:
+      !include rcpargs.yaml.inc
+    project-type: freestyle     
+    wrappers:
+      - RCP_WRAPPERS
+    builders:
+      - FT_builder:
+    publishers:
+      - FT-ARTIFACT
+
+- wrapper:
+    name: RCP_WRAPPERS
+    wrappers: 
+      - timeout:
+          timeout: 90
+          type: absolute
+          fail: true
+      - workspace-cleanup
+      - timestamps
+
+- trigger:
+    name: RCP_TRIGGER
+    triggers:
+      - gerrit:
+         trigger-on:
+            - patchset-created-event
+         projects:
+            - project-compare-type: "PLAIN"
+              project-pattern: 'scm_rcp/SS_RCPCI'
+              branches:
+                 - branch-compare-type: 'PLAIN'
+                   branch-pattern: 'master'
+              file-paths:
+                 - compare-type: "PLAIN"
+                   pattern: ''
+          
+- builder:
+    name: FT_builder
+    builders:
+      - shell:
+          !include-raw rcpft.sh
+          
+- publisher:
+    name: FT-ARTIFACT
+    publishers:
+      - archive:
+          artifacts: '**/logs/*,**/errlogs/*'               
+
+

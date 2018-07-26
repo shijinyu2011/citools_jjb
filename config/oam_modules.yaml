@@ -1,0 +1,121 @@
+- project:
+    name: oam
+    module:
+      - border:
+         svnrepo: 'pac-bor_qx-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - clwman:
+         svnrepo: 'pac-clw_q2-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - di5prb:
+         svnrepo: 'com-di5sta-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - evasor:
+         svnrepo: 'SS_QNEvasor'
+         product: !!python/tuple [mcrnc,]
+      - gizmos:
+         svnrepo: 'pac-giz_qd-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - gougou:
+         svnrepo: 'pac-gou_qx-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - hwxprb:
+         svnrepo: 'pac-hwxprb-e1/qx'
+         product: !!python/tuple [mcrnc,]
+      - jkrprb:
+         svnrepo: 'pac-jkr_qx-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - obhero:
+         svnrepo: 'pac-obh_qx-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - obllib:
+         svnrepo: 'pac-obllib-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - pablib:
+         svnrepo: 'com-pablib-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - pabros:
+         svnrepo: 'pac-pab_q2-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - railib:
+         svnrepo: 'pac-rnwdb-e1/mc'
+         product: !!python/tuple [mcrnc,]
+      - rnwdb:
+         svnrepo: 'pac-rnwdb-e1/qx'
+         product: !!python/tuple [crnc,]
+      - rnwman:
+         svnrepo: 'SS_QNrnwman'
+         product: !!python/tuple [mcrnc,]
+      - raktor:
+         svnrepo: 'pac-rak_q2-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - pi5prb:
+         svnrepo: 'pac-pi5prb-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - pmiprb:
+         svnrepo: 'pac-pmi_q2-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - rayman:
+         svnrepo: 'pac-ray_q2-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - rekove:
+         svnrepo: 'pac-rek_qx-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - reuman:
+         svnrepo: 'pac-reu_q2-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - rezini:
+         svnrepo: 'pac-rez_qx-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - tiiprb:
+         svnrepo: 'pac-tiiprb-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - vexeli:
+         svnrepo: 'pac-vex_q2-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - zhulib:
+         svnrepo: 'pac-zhu_q2-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+         
+    jobs:
+      - 'oam_ru50ep1_cci_{module}'
+      - 'oam_ru40_cci_{module}'
+
+
+- project:
+    name: oam_ru50ep1
+    module:
+      - boimed:
+         svnrepo: 'pac-boi_qx-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - baysex:
+         svnrepo: 'pac-baysex-e1/qx'
+         product: !!python/tuple [crnc,]
+      - boimed:
+         svnrepo: 'pac-boi_qx-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - jmlprb:
+         svnrepo: 'pac-jmlprb-e1/qx'
+         product: !!python/tuple [crnc,]
+      - ma5prb:
+         svnrepo: 'pac-ma5_q2-e1/qx'
+         product: !!python/tuple [mcrnc, crnc]
+      - ruoste:
+         svnrepo: 'pac-ruoste-e1/qx'
+         product: !!python/tuple [crnc]
+      - ruoste_mc:
+         svnrepo: 'pac-ruoste-e1/mx'
+         product: !!python/tuple [mcrnc]
+         
+    jobs:
+      - 'oam_ru50ep1_cci_{module}'
+      
+- project:
+    name: oam_ru40
+    module:
+      - boimed:
+         svnrepo: 'pac-boi_qx-e1/qx'
+         product: !!python/tuple [crnc,]
+         
+    jobs:
+      - 'oam_ru40_cci_{module}'

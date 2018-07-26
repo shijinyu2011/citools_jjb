@@ -1,0 +1,29 @@
+- project:
+    name: RCP_vrnc_ft
+    product: 'vRNC'
+    myshell: 'scripts/clouldilcci.sh'
+    slave: 'cloudil_docker_image'
+    ftslave: 'CCIFT_CLOUDIL'
+    branch: 'cloudILtrunk'
+    module:
+      !include conf/ilvrnc_ft.conf
+    jobs:
+      - '{module}_{product}_ft'
+
+- project:
+    name: RCP_vrnc
+    product: 'vRNC'
+    slave: 'cloudil_docker_image'
+    branch: 'cloudILtrunk'
+    module:
+      !include conf/ilvrnc_ft.conf
+    jobs:
+      - '{module}_{product}_all'
+
+
+- project:
+    name: COMMON_IL
+    module:
+      !include conf/commonil.conf
+    jobs: 
+      - 'common_il'
