@@ -1,0 +1,74 @@
+#!/bin/bash
+svn_branch="https://svne1.access.nsn.com/isource/svnroot/scm_il/branches/cloud_controller_dev"
+gerritserver="http://hzgitv01.china.nsn-net.net/"
+mkdir -p  workcopy
+rm -fr workspace
+mkdir  workspace
+workspace="workspace"
+workcopy="workcopy"
+
+cd workcopy
+echo "`date`: export configure file"
+rm -fr build.config
+svn export $svn_branch/build.config
+
+#public_sub="vgp vgpconfig SS_FVNMake SS_FVNTools SS_ILProduct SS_ILCommon"
+public_sub="vgp SS_ILProduct"
+code_pub=`cat build.config|grep "cwlc"|cut -d" " -f1`
+rm -fr rcp_external
+svn pg svn:externals https://svne1.access.nsn.com/isource/svnroot/scm_il/branches/cloud_controller_dev > external_files
+
+echo "`date`: check code"
+for subsystem in $public_sub $code_pub
+do
+   cat external_files|grep svnroot\/$subsystem\/|grep -v " vgp\_">>rcp_external
+   if test -d "$subsystem" ;then
+       echo "`date`:subsystem has been cloned"
+   else
+       echo "`date`:$subsystem has not been cloned, clone a new one"
+       if  [ `echo $subsystem|grep "\(SS_IL\)\|\(SS_FVN\)\|\(SS_QNDPM\)"` ];then
+            url="scm_il/"
+      elif [ `echo $subsystem|grep "vgp"` ];then
+            url=""
+       else
+            url="scm_rcp/"
+       fi
+       echo "git clone $gerritserver/$url$subsystem $subsystem"
+       git clone $gerritserver/$url$subsystem.git $subsystem
+       echo "* -text">$subsystem/.git/info/attributes
+   fi
+done
+echo "`date`: set work env for git repo"
+for subsystem in $public_sub $code_pub
+do
+   if [ "`cat rcp_external|grep svnroot\/$subsystem\/|grep -o trunk`" = "trunk" ];then
+      branch="master"
+   else
+      branch=`cat rcp_external|grep -m 1 svnroot\/$subsystem\/|cut -d"/" -f6`
+   fi
+
+   echo "`date`: checkout code for $subsystem"
+   git --git-dir=./$subsystem/.git --work-tree=./$subsystem clean -dxf
+   git --git-dir=./$subsystem/.git --work-tree=./$subsystem checkout -- "*"
+   git --git-dir=./$subsystem/.git --work-tree=./$subsystem fetch origin $branch
+   git --git-dir=./$subsystem/.git --work-tree=./$subsystem checkout FETCH_HEAD
+
+   for i in `cat rcp_external|grep svnroot\/\$subsystem\/|cut -d " " -f2`;do
+      dname=$i
+      rname=`cat rcp_external|grep svnroot\/\$subsystem\/.*\$dname|cut -d" " -f1|sed s#.*\/##g`
+      echo "`date`: create soft link for $subsystem/$rname"
+      echo "ln -fs `pwd`/$subsystem/$rname `pwd`/../$workspace/$dname"
+      ln -fs `pwd`/$subsystem/$rname `pwd`/../$workspace/$dname
+   done
+done
+echo "checkout out test code"
+subsystem=$1
+ref=$2
+git --git-dir=./$subsystem/.git --work-tree=./$subsystem fetch origin $ref
+git --git-dir=./$subsystem/.git --work-tree=./$subsystem checkout FETCH_HEAD
+
+cd ../$workspace
+svn co https://svne1.access.nsn.com/isource/svnroot/scm_il/branches/cloud_controller_dev/tools/ tools
+
+#echo "compile release_rpm for $1"
+#./product/build/setwlcenv.sh -j"cd ./$subsystem/build && make release_rpm"

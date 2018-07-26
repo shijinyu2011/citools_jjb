@@ -1,0 +1,153 @@
+- project:
+    name: IL
+    module:
+      - ALQFIL
+      - ATIP
+      - AddrMgmt
+      - AddrMgmtLib
+      - Alarm
+      - AutoRet
+      - CAC
+      - CERM
+      - CLUGEN
+      - CallMgmt
+      - Catlib
+      - CoSiting
+      - Common
+      - Confman
+      - ConfmanLib
+      - CositingLabel
+      - DMXEmu
+      - DOC
+      - DPDK
+      - DXPFILE
+      - DXSERR
+      - Diagnostic
+      - DmxMsg
+      - DmxMsgLib
+      - Dtolib
+      - EITM
+      - EITP
+      - EITPProxy
+      - EventFWEfiLib
+      - EventForwarder
+      - FAI
+      - FUnit
+      - FUnitLib
+      - FaStDist
+      - FeaMgmtFmnLib
+      - FeatureMgmt
+      - HWDiagnostics
+      - IPSecPlan
+      - IPoA
+      - LBManager
+      - LIBMSC
+      - Libgen
+      - LoadBalancer
+      - Log
+      - MFS
+      - MFSFisLib
+      - MFSSYFLib
+      - Naseva
+      - NasevaLib
+      - NetworkLicense
+      - ParamMgmt
+      - ParamMgmtPmtLib
+      - REAS
+      - REASLib
+      - RNCResi
+      - SELib
+      - SS7PLAN
+      - SWMAN
+      - Sigiub
+      - Sigss7
+      - Starter
+      - StarterPRSLib
+      - Statistics
+      - SymCollector
+      - TestCallMgmt
+      - TestCatlib
+      - TestCommon
+      - TestConfman
+      - TestDmxMsg
+      - TestEITM
+      - TestEITPProxy
+      - TestFUnit
+      - TestFeaMgmt
+      - TestLibgen
+      - TestMFS
+      - TestNaseva
+      - TestParamMgmt
+      - TestREAS
+      - TestRNCResi
+      - TestSWMAN
+      - TestStarter
+      - TestTicket
+      - TestXMLLIB
+      - Thirdpart
+      - Ticket
+      - Tools
+      - UPSim
+      - Util
+      - Warming
+      - XMLLIB
+      
+    jobs:
+      - 'CCI_IL{module}_VGP'
+
+- job-template:
+    name: 'CCI_IL{module}_VGP'
+    node: VGP
+    parameters:
+      - string:
+          name: subsystem
+          default: SS_IL{module}
+    project-type: freestyle
+     
+    wrappers:
+      - timeout:
+          timeout: 90
+          type: absolute
+          fail: true
+    builders:
+      - IL-COMPILER-VGP:
+    publishers:
+      - il-artifact
+
+
+- builder:
+    name: IL-COMPILER-VGP
+    builders:
+      - shell: |
+          #!/bin/bash
+          echo $EXECUTOR_NUMBER
+          echo "clean workspace"
+          rm -fr $WORKSPACE/build/
+          mkdir $WORKSPACE/build/
+          
+          workenv="/workspace/cci/"
+          cd /workspace/cci/
+          workspacename="cloud_controll_vgp$EXECUTOR_NUMBER"
+          svnlink="https://svne1.access.nsn.com/isource/svnroot/scm_il/branches/cloud_controll_vgp"
+          testsvnurl=""
+          if test -d $workspacename; then
+            svn up $workspacename   
+            svn status --no-ignore $workspacename |grep ^[I?IM] |awk ' { print $2  } ' | xargs rm -rf    
+          else  
+            svn co --username hzscm --password ZqvonUKw --non-interactive --trust-server-cert $svnlink $workspacename
+          fi
+          #   rm -fr  $workspacename/$subsystem
+          #   svn co --username hzscm --password ZqvonUKw --non-interactive --trust-server-cert  $testsvnurl  $workspacename/$subsystem
+          ccipath="$workenv/$workspacename"
+          cd $ccipath
+          echo "buid for $subsystem"
+          ./product/build/setvgpenv.sh -j"cd ./$subsystem/build && make release_rpm"
+          ret=$?
+          cp -fr ./$subsystem/build/$subsystem*  $WORKSPACE/build/
+          exit $ret
+        
+- publisher:
+    name: il-artifact
+    publishers:
+      - archive:
+          artifacts: 'build/**'

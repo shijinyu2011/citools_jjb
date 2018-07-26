@@ -1,0 +1,53 @@
+- project:
+    name: RCP
+    module:
+      - SS_RCPMsg
+    jobs:
+      - '{module}_UP2OS'
+
+- job-template:
+    name: '{module}_UP2OS'
+    node: up_image
+    scm:
+      - RCP-SCM-TRIGGER
+    triggers:
+      - pollscm: "*/5 * * * *"
+    parameters:
+      - string:
+          name: image_path
+      - string:
+          name: image_name
+    project-type: freestyle
+     
+    wrappers:
+      - timeout:
+          timeout: 90
+          type: absolute
+          fail: true
+    builders:
+      - RCP-FT:
+    publishers:
+      - RCP-SCM:
+
+- scm:
+    name: RCP-SCM-TRIGGER
+    scm:
+      - svn:
+          workspaceupdater: update
+          repos:
+            - url: https://svne1.access.nsn.com/isource/svnroot/IPA_CI_triggers/RCP_CI_trigger
+              basedir: RCP_CI_trigger
+
+- builder:
+    name: RCP-FT
+    builders:
+      - shell:
+          !include-raw-escape uploadimage.sh
+
+- publisher:
+    name: RCP-SCM
+    publishers:
+      - trigger-parameterized-builds:
+          - project: SCM_RCP_CI_FT
+            property-file: ./next.args
+            condition: UNSTABLE_OR_BETTER

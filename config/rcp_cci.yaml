@@ -1,0 +1,100 @@
+- job-template:
+    name: '{module}'
+    project-type: flow
+    dsl: |
+      parallel (
+        {{ build("{name}_COMPILE",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"]) }},
+        {{ build("{name}_STATIC_ANALYSIS",GERRIT_SCHEME:params["GERRIT_SCHEME"],GERRIT_HOST:params["GERRIT_HOST"],GERRIT_PORT:params["GERRIT_PORT"],GERRIT_PROJECT:params["GERRIT_PROJECT"],GERRIT_BRANCH:params["GERRIT_BRANCH"]) }},
+      )
+    triggers:
+      - gerrit:
+          trigger-on:
+            - patchset-created-event
+            - draft-published-event
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'scm_rcp/{name}'
+              branches:
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: 'cloud_controller_dev'
+
+- job-template:
+    name: '{module}_COMPILE'
+    project-type: freestyle
+    node: docker_image
+    parameters:
+      - string:
+          name: subsystem
+          default: '{module}'
+      - string:
+          name: V
+          default: c
+      - string:
+          name: depend_subsystem
+          default: SS_RCPMSLib SS_ZMQLib I_ILCommon SS_ILCommon SS_RCPMsgLib I_RCPMsg SS_QNDPM SS_ILDBM SS_ILDeployment SS_ILDBHAforPostgres
+    builders:
+      - make-compile
+    publishers:
+      - scp-artifact:
+          subsystem: '{module}'
+
+- job-template:
+    name: '{module}_STATIC_ANALYSIS'
+    project-type: freestyle
+    node: docker_image
+    parameters:
+      - string:
+          name: subsystem
+          default: '{module}'
+      - string:
+          name: V
+          default: s
+      - string:
+          name: depend_subsystem
+          default: SS_ZMQLib I_ILCommon SS_ILCommon SS_RCPMsgLib I_RCPMsg
+    builders:
+      - make-compile
+
+- job-group:
+    name: '{module}-cci-tests'
+    jobs:
+      - '{module}'
+      - '{module}_COMPILE'
+      - '{module}_STATIC_ANALYSIS'
+ 
+- builder:
+    name: make-compile
+    builders:
+      - shell: |
+          #!/bin/bash
+          git clone git@gitlab.china.nsn-net.net:platformci/sad-runner.git
+          git clone $GERRIT_SCHEME://x52chen@$GERRIT_HOST:$GERRIT_PORT/$GERRIT_PROJECT source -b $GERRIT_BRANCH --depth
+
+          svn export https://svne1.access.nsn.com/isource/svnroot/citools/cctools/trunk/OPTcheckout/rcpco.sh
+          ./rcpco.sh "$depend_subsystem" $WORKSPACE/source scm_il/branches/$GERRIT_BRANCH
+          python $WORKSPACE/sad-runner/sad_runner.py -p rcp -m $subsystem -b $WORKSPACE/source/$subsystem -o $WORKSPACE/statistics
+ 
+- publisher:
+    name: 'scp-artifact'
+    publishers:
+      - scp:
+          site: 'hzwebserver02.china.nsn-net.net'
+          files:
+            - target: 'tar/{subsystem}/$BUILD_NUMBER/'
+              source: '**/*.tar.xz'
+              keep-hierarchy: false
+              copy-after-failure: false
+
+- publisher:
+    name: oam-artifact
+    publishers:
+      - archive:
+          artifacts: 'statistics/**, artifacts/**,**/*.rpm, *build_revision.txt,**/*.IMG,**/*.log,**/error.txt,**/*.MP*'
+  
+- project:
+    name: RCP
+    module:
+      - SS_RCPMsg
+    jobs:
+      - '{module}-cci-tests'
+
